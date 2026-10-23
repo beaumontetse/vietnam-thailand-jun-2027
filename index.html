@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Vietnam &amp; Thailand Stays</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: sticky route bar of four legs (IATA codes) → one section per leg: logistics strip, neighborhood cards with live Airbnb links, shared shortlist. */
+:root{
+  --bg:#F2F5F3; --surface:#FFFFFF; --ink:#14211D; --muted:#5A6B65; --line:#D6DFDA;
+  --accent:#0C7A63; --accent-ink:#FFFFFF; --accent-soft:#DDEFE9;
+  --vn:#C2412A; --th:#2F5BA8; --good:#1F8A4C; --warn:#A86B12;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1614; --surface:#18221F; --ink:#E6EEEA; --muted:#97A8A1; --line:#2A3833;
+  --accent:#3FC3A0; --accent-ink:#06231B; --accent-soft:#1B3A31;
+  --vn:#F07A60; --th:#7EA4F0; --good:#5FD08E; --warn:#E3A84A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1614; --surface:#18221F; --ink:#E6EEEA; --muted:#97A8A1; --line:#2A3833;
+  --accent:#3FC3A0; --accent-ink:#06231B; --accent-soft:#1B3A31;
+  --vn:#F07A60; --th:#7EA4F0; --good:#5FD08E; --warn:#E3A84A; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono);letter-spacing:.02em}
+.label{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600}
+
+header.top{padding-block:28px 18px}
+header.top h1{font-size:clamp(30px,6vw,52px);font-weight:800;letter-spacing:-.02em}
+header.top p{color:var(--muted);margin:8px 0 0;max-width:60ch}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-top:18px}
+.ctl{display:flex;align-items:center;gap:8px}
+.step{display:inline-flex;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.step button{border:0;background:none;color:var(--ink);width:34px;height:34px;font-size:18px;cursor:pointer;border-radius:999px}
+.step span{min-width:26px;text-align:center;align-self:center;font-variant-numeric:tabular-nums;font-weight:600}
+select,input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+.toggle{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+
+nav.route{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-block:1px solid var(--line)}
+nav.route .wrap{display:flex;gap:4px;overflow-x:auto;padding-block:8px;scrollbar-width:none}
+nav.route a{flex:1 0 auto;display:flex;flex-direction:column;text-decoration:none;color:var(--ink);padding:6px 12px;border-radius:8px;min-width:96px}
+nav.route a:hover{background:var(--accent-soft)}
+nav.route .code{font-family:var(--mono);font-size:17px;font-weight:500}
+nav.route .when{font-size:12px;color:var(--muted)}
+nav.route .arrow{align-self:center;color:var(--muted);flex:0 0 auto}
+
+section.leg{padding-block:40px 8px;scroll-margin-top:72px}
+.leg-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+.leg-head h2{font-size:clamp(26px,4.4vw,38px);font-weight:700;letter-spacing:-.01em}
+.flag{font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:4px;color:#fff}
+.flag.vn{background:var(--vn)} .flag.th{background:var(--th)}
+.leg-head .dates{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--muted)}
+.leg-head .dates b{color:var(--ink)}
+
+.logi{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0 4px}
+.logi div{min-width:0;font-size:14px}
+.logi .flight{font-family:var(--mono);font-size:13px}
+.note{margin-top:12px;font-size:14px;padding:10px 12px;border-left:3px solid var(--warn);background:var(--surface);border-radius:0 8px 8px 0}
+
+.hoods{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:20px}
+.hood{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.hood h3{font-size:19px;font-weight:700}
+.hood .local{font-size:13px;color:var(--muted)}
+.hood p{margin:0;font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--ink)}
+.tag.pick{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.hood .go{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;font-size:14px;padding:8px 14px;border-radius:8px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.small{padding:5px 10px;font-size:13px}
+
+.shortlist{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.sl-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.sl-head h3{font-size:18px}
+.picks{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.pick{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:12px;border:1px solid var(--line);border-radius:10px}
+.pick.booked{border-color:var(--good);box-shadow:inset 3px 0 0 var(--good)}
+.pick .vote{display:flex;flex-direction:column;align-items:center;border:1px solid var(--line);background:none;color:var(--ink);border-radius:8px;padding:4px 8px;cursor:pointer;font-variant-numeric:tabular-nums;min-width:44px}
+.pick .vote.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.pick .body{min-width:0}
+.pick .ttl{font-weight:600;overflow-wrap:anywhere}
+.pick .meta{font-size:13px;color:var(--muted)}
+.pick .notes{font-size:14px;margin-top:4px;overflow-wrap:anywhere}
+.pick .acts{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.linkbtn{background:none;border:0;color:var(--muted);font:inherit;font-size:13px;cursor:pointer;padding:2px}
+.linkbtn:hover{color:var(--ink)}
+.empty{color:var(--muted);font-size:14px;margin:10px 0 0}
+form.add{display:none;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+form.add.open{display:grid}
+form.add .full{grid-column:1/-1}
+form.add input,form.add textarea{width:100%}
+form.add .row{display:flex;gap:8px;justify-content:flex-end}
+.status{font-size:13px;color:var(--muted)}
+footer{padding-block:40px 48px;color:var(--muted);font-size:13px}
+@media (max-width:560px){
+  form.add{grid-template-columns:1fr}
+  .pick{grid-template-columns:auto 1fr}
+  .pick .acts{grid-column:1/-1;flex-direction:row;justify-content:flex-end}
+  .leg-head .dates{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:no-preference){.btn,.vote{transition:background .15s,color .15s}}
+</style>
+</head>
+<body>
+
+<header class="top wrap">
+  <div class="label">May 29 – June 13, 2027 · 14 nights</div>
+  <h1>Vietnam &amp; Thailand Stays</h1>
+  <p>Pick a neighborhood in each city and open Airbnb with your dates already set. Paste listings you like into that city's shortlist so everyone can vote.</p>
+  <div class="controls">
+    <div class="ctl"><span class="label">Guests</span>
+      <div class="step"><button id="gMinus" aria-label="Fewer guests">−</button><span id="gCount">2</span><button id="gPlus" aria-label="More guests">+</button></div>
+    </div>
+    <label class="ctl" for="maxPrice"><span class="label">Max / night</span>
+      <select id="maxPrice">
+        <option value="">Any</option><option value="40">$40</option><option value="60">$60</option><option value="80">$80</option>
+        <option value="120">$120</option><option value="180">$180</option><option value="250">$250</option>
+      </select>
+    </label>
+    <label class="toggle" for="entire"><input type="checkbox" id="entire" checked> Entire place only</label>
+  </div>
+</header>
+
+<nav class="route" aria-label="Trip legs"><div class="wrap" id="routeNav"></div></nav>
+
+<main class="wrap" id="legs"></main>
+
+<footer class="wrap"><span id="saveNote">Your shortlist is saved in this browser only.</span> Airbnb opens in a new tab; prices there include fees only once you set dates, which these links already do.</footer>
+
+<script>
+const LEGS = [
+  {id:"han", city:"Hanoi", country:"Vietnam", cc:"vn", code:"HAN", ci:"2027-05-30", co:"2027-06-03",
+   arrive:{flight:"NH/UA7917 · NRT → HAN", time:"Sun May 30, 10:35 pm"},
+   leave:{flight:"VJ137 · HAN → SGN", time:"Thu Jun 3, 12:45 pm"},
+   transfer:"Noi Bai airport is about 45 min from the Old Quarter by Grab.",
+   note:"You land at 10:35 pm. Filter for self check-in or message the host about a late arrival.",
+   hoods:[
+     {name:"Old Quarter", q:"Old Quarter, Hoan Kiem, Hanoi, Vietnam", local:"Phố Cổ · Hoàn Kiếm", pick:true,
+      text:"The 36 streets: street food on every corner, walkable to Hoan Kiem Lake and the train-street cafes. Loud late, so ask for a room off the main street.", tags:["Walk everywhere","Street food","Noisy"]},
+     {name:"French Quarter", q:"French Quarter, Hoan Kiem, Hanoi, Vietnam", local:"Khu phố Pháp",
+      text:"Wide boulevards south of the lake, near the Opera House. Calmer than the Old Quarter and still a 10-minute walk to it.", tags:["Quieter","Central"]},
+     {name:"West Lake", q:"Tay Ho, Hanoi, Vietnam", local:"Tây Hồ",
+      text:"Lakeside cafes and bigger apartments, popular with expats. A 15-minute Grab into the Old Quarter.", tags:["More space","Cafes","Grab needed"]},
+     {name:"Ba Dinh", q:"Ba Dinh, Hanoi, Vietnam", local:"Ba Đình",
+      text:"Leafy and local, by the Ho Chi Minh Mausoleum and Truc Bach Lake. Good value, fewer tourists.", tags:["Value","Local feel"]}
+   ]},
+  {id:"sgn", city:"Ho Chi Minh City", country:"Vietnam", cc:"vn", code:"SGN", ci:"2027-06-03", co:"2027-06-06",
+   arrive:{flight:"VJ137 · HAN → SGN", time:"Thu Jun 3, 2:55 pm"},
+   leave:{flight:"Vietjet · SGN → BKK", time:"Sun Jun 6, 11:15 am"},
+   transfer:"Tan Son Nhat is 20–40 min from District 1 depending on traffic.",
+   hoods:[
+     {name:"District 1", q:"District 1, Ho Chi Minh City, Vietnam", local:"Quận 1 · Bến Thành", pick:true,
+      text:"The center: Ben Thanh Market, Nguyen Hue walking street and rooftop bars. Easiest base for a 3-night stay.", tags:["Central","Nightlife"]},
+     {name:"District 3", q:"District 3, Ho Chi Minh City, Vietnam", local:"Quận 3",
+      text:"Tree-lined streets, hidden cafes and great local food, one stop from District 1. Closer to the airport too.", tags:["Food","Quieter","Near airport"]},
+     {name:"Thao Dien", q:"Thao Dien, Thu Duc, Ho Chi Minh City, Vietnam", local:"Thảo Điền",
+      text:"Riverside villas and pools across the river. Relaxed, but every trip downtown is a Grab or the metro.", tags:["Pools","Spacious","Away from center"]}
+   ]},
+  {id:"bkk", city:"Bangkok", country:"Thailand", cc:"th", code:"BKK", ci:"2027-06-06", co:"2027-06-10",
+   arrive:{flight:"Vietjet · SGN → BKK (Suvarnabhumi)", time:"Sun Jun 6, 12:45 pm"},
+   leave:{flight:"AirAsia · DMK → HKT (Don Mueang)", time:"Thu Jun 10, 12:30 pm"},
+   transfer:"You arrive at Suvarnabhumi but leave from Don Mueang. Staying north of the center (Ari) makes the Don Mueang run shortest.",
+   note:"Thai law restricts rentals under 30 days in many condo buildings, and some front desks turn guests away. Houses, townhouses and serviced apartments avoid this.",
+   hoods:[
+     {name:"Ari", q:"Ari, Phaya Thai, Bangkok, Thailand", local:"อารีย์", pick:true,
+      text:"Leafy cafe district on the BTS. About 25 min to Don Mueang for your flight out, and Phaya Thai's airport rail stop is nearby for the way in.", tags:["Best for DMK","BTS","Cafes"]},
+     {name:"Sukhumvit", q:"Sukhumvit, Asok, Bangkok, Thailand", local:"Asok · Thonglor",
+      text:"Malls, bars and the biggest choice of apartments. Thonglor is the nicer stretch. Allow an hour to Don Mueang in traffic.", tags:["Most listings","Nightlife","Far from DMK"]},
+     {name:"Silom / Sathorn", q:"Silom, Bang Rak, Bangkok, Thailand", local:"สีลม",
+      text:"Business district with rooftop bars, Lumphini Park and night markets. On both BTS and MRT.", tags:["Rooftops","Transit"]},
+     {name:"Riverside", q:"Charoen Krung, Bangkok, Thailand", local:"Charoen Krung",
+      text:"Old Bangkok along the Chao Phraya, with boats to the Grand Palace and Wat Arun. Scenic but slower to get around.", tags:["Temples","Scenic"]}
+   ]},
+  {id:"hkt", city:"Phuket", country:"Thailand", cc:"th", code:"HKT", ci:"2027-06-10", co:"2027-06-13",
+   arrive:{flight:"AirAsia · DMK → HKT", time:"Thu Jun 10, 1:55 pm"},
+   leave:{flight:"EY415 · HKT → AUH → JFK", time:"Sun Jun 13, 3:20 am"},
+   transfer:"Your flight leaves at 3:20 am, so you head to the airport around midnight on the night of Jun 12. Book through Jun 13 to keep the place until then.",
+   note:"June is monsoon season on the Andaman side: rough seas, red-flag beaches some days. Kata and Nai Yang are usually calmer than Patong.",
+   hoods:[
+     {name:"Kata / Karon", q:"Kata Beach, Phuket, Thailand", local:"Kata · Karon", pick:true,
+      text:"Good beaches with a relaxed scene, villas with pools in the hills. About an hour from the airport.", tags:["Beach","Pool villas","Far from HKT"]},
+     {name:"Patong", q:"Patong, Phuket, Thailand", local:"ป่าตอง",
+      text:"Bangla Road nightlife and the busiest beach. Lively and crowded.", tags:["Nightlife","Busy"]},
+     {name:"Phuket Old Town", q:"Phuket Old Town, Phuket, Thailand", local:"เมืองภูเก็ต",
+      text:"Sino-Portuguese shophouses, the Sunday walking street and the island's best food. No beach, but cheap and central.", tags:["Food","Value","No beach"]},
+     {name:"Nai Yang", q:"Nai Yang Beach, Phuket, Thailand", local:"Last night only", ci:"2027-06-12", co:"2027-06-13",
+      text:"Quiet beach 10 min from the airport. Split the stay: 2 nights in Kata, then your last night here so the midnight airport run is easy.", tags:["10 min to HKT","Last night"]}
+   ]}
+];
+
+const fmtD = s => new Date(s+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
+const nights = (a,b) => Math.round((new Date(b)-new Date(a))/864e5);
+const el = (t,cls,txt) => {const e=document.createElement(t); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e;};
+const store = {get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}}, set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+const prefs = Object.assign({guests:2, max:"", entire:true}, store.get("stayPrefs",{}));
+
+function airbnbUrl(h, leg){
+  const p = new URLSearchParams();
+  p.set("query", h.q);
+  p.set("checkin", h.ci || leg.ci);
+  p.set("checkout", h.co || leg.co);
+  p.set("adults", String(prefs.guests));
+  if (prefs.max) p.set("price_max", prefs.max);
+  if (prefs.entire) p.append("room_types[]", "Entire home/apt");
+  return "https://www.airbnb.com/s/homes?" + p.toString();
+}
+
+// Route nav
+const nav = document.getElementById("routeNav");
+LEGS.forEach((leg,i)=>{
+  if(i) nav.appendChild(el("span","arrow","→"));
+  const a = el("a"); a.href = "#"+leg.id;
+  a.appendChild(el("span","code",leg.code));
+  a.appendChild(el("span","when", fmtD(leg.ci)+" – "+fmtD(leg.co)));
+  nav.appendChild(a);
+});
+
+// Legs
+const main = document.getElementById("legs");
+const linkEls = [];
+const listEls = {};
+LEGS.forEach(leg=>{
+  const s = el("section","leg"); s.id = leg.id;
+  const head = el("div","leg-head");
+  head.appendChild(el("h2",null,leg.city));
+  head.appendChild(el("span","flag "+leg.cc,leg.country.toUpperCase()));
+  const d = el("span","dates");
+  d.innerHTML = "<b></b> · ";
+  d.querySelector("b").textContent = fmtD(leg.ci)+" → "+fmtD(leg.co);
+  d.appendChild(document.createTextNode(nights(leg.ci,leg.co)+" nights"));
+  head.appendChild(d);
+  s.appendChild(head);
+
+  const logi = el("div","logi");
+  [["Arrive",leg.arrive],["Leave",leg.leave]].forEach(([lab,f])=>{
+    const c = el("div"); c.appendChild(el("div","label",lab));
+    c.appendChild(el("div",null,f.time)); c.appendChild(el("div","flight",f.flight)); logi.appendChild(c);
+  });
+  const t = el("div"); t.appendChild(el("div","label","Getting there")); t.appendChild(el("div",null,leg.transfer)); logi.appendChild(t);
+  s.appendChild(logi);
+  if (leg.note) s.appendChild(el("div","note",leg.note));
+
+  const hoods = el("div","hoods");
+  leg.hoods.forEach(h=>{
+    const c = el("article","hood");
+    c.appendChild(el("h3",null,h.name));
+    c.appendChild(el("div","local",h.local));
+    c.appendChild(el("p",null,h.text));
+    const tags = el("div","tags");
+    if (h.pick) tags.appendChild(el("span","tag pick","Our pick"));
+    h.tags.forEach(x=>tags.appendChild(el("span","tag",x)));
+    c.appendChild(tags);
+    const go = el("div","go");
+    const a = el("a","btn"); a.target="_blank"; a.rel="noopener";
+    a.textContent = h.ci ? "Search Airbnb · "+fmtD(h.ci)+"–"+fmtD(h.co) : "Search Airbnb";
+    linkEls.push([a,h,leg]); go.appendChild(a); c.appendChild(go);
+    hoods.appendChild(c);
+  });
+  s.appendChild(hoods);
+
+  // Shortlist
+  const sl = el("div","shortlist");
+  const sh = el("div","sl-head");
+  sh.appendChild(el("h3",null,leg.city+" shortlist"));
+  const addBtn = el("button","btn ghost small","+ Add a listing"); addBtn.type="button";
+  sh.appendChild(addBtn); sl.appendChild(sh);
+  const form = el("form","add"); form.id = "form-"+leg.id;
+  form.innerHTML = `
+    <input class="full" id="url-${leg.id}" type="url" placeholder="Paste Airbnb link" required>
+    <input id="title-${leg.id}" type="text" placeholder="Name (e.g. Loft by the lake)">
+    <input id="price-${leg.id}" type="number" min="0" step="1" placeholder="$ per night">
+    <textarea class="full" id="notes-${leg.id}" rows="2" placeholder="Why it's good, beds, check-in…"></textarea>
+    <div class="row full"><span class="status" id="status-${leg.id}"></span><button type="button" class="btn ghost small" data-cancel>Cancel</button><button class="btn small">Add</button></div>`;
+  sl.appendChild(form);
+  addBtn.onclick = ()=>{form.classList.toggle("open"); if(form.classList.contains("open")) form.querySelector("input").focus();};
+  form.querySelector("[data-cancel]").onclick = ()=>{form.reset(); form.classList.remove("open");};
+  form.addEventListener("submit", e=>{e.preventDefault(); addPick(leg.id, form);});
+  const list = el("div","picks"); sl.appendChild(list);
+  listEls[leg.id] = list;
+  s.appendChild(sl);
+  main.appendChild(s);
+});
+
+function refreshLinks(){ linkEls.forEach(([a,h,leg])=>a.href = airbnbUrl(h,leg)); }
+
+// Controls
+const gCount = document.getElementById("gCount");
+const maxSel = document.getElementById("maxPrice");
+const entire = document.getElementById("entire");
+gCount.textContent = prefs.guests; maxSel.value = prefs.max; entire.checked = prefs.entire;
+function savePrefs(){ store.set("stayPrefs",prefs); gCount.textContent=prefs.guests; refreshLinks(); }
+document.getElementById("gMinus").onclick = ()=>{ prefs.guests=Math.max(1,prefs.guests-1); savePrefs(); };
+document.getElementById("gPlus").onclick = ()=>{ prefs.guests=Math.min(16,prefs.guests+1); savePrefs(); };
+maxSel.onchange = ()=>{ prefs.max=maxSel.value; savePrefs(); };
+entire.onchange = ()=>{ prefs.entire=entire.checked; savePrefs(); };
+refreshLinks();
+
+// Shortlist data: shared db when available, otherwise this browser only
+let db=null, me=null, userNs=null, picks=[], shared=false;
+function localPicks(){ return store.get("localPicks",[]); }
+function saveLocal(){ store.set("localPicks", picks.filter(p=>p._local)); }
+
+function voteCount(p){ return Object.values(p.votes||{}).filter(Boolean).length; }
+
+async function render(){
+  const ids = [...new Set(picks.map(p=>p.by).filter(Boolean))];
+  let profiles = {};
+  if (userNs && ids.length) { try { profiles = await userNs.profiles(ids); } catch(e){} }
+  LEGS.forEach(leg=>{
+    const list = listEls[leg.id]; list.replaceChildren();
+    const mine = picks.filter(p=>p.seg===leg.id).sort((a,b)=>(b.booked-a.booked)||(voteCount(b)-voteCount(a))||(a.at-b.at));
+    if (!mine.length){ list.appendChild(el("p","empty","No listings yet. Open a neighborhood search above, then paste the ones you like here.")); return; }
+    mine.forEach(p=>{
+      const row = el("div","pick"+(p.booked?" booked":""));
+      const v = el("button","vote"+(me && p.votes && p.votes[me]?" on":"")); v.type="button";
+      v.setAttribute("aria-label","Vote for this listing");
+      v.appendChild(el("span",null,"▲")); v.appendChild(el("span",null,String(voteCount(p))));
+      v.onclick = ()=>toggleVote(p);
+      row.appendChild(v);
+      const b = el("div","body");
+      const tl = el("a","ttl"); tl.href = safeUrl(p.url); tl.target="_blank"; tl.rel="noopener"; tl.textContent = p.title || "Airbnb listing";
+      b.appendChild(tl);
+      const metaBits = [];
+      if (p.price) metaBits.push("$"+p.price+"/night · ~$"+(p.price*nights(leg.ci,leg.co))+" total");
+      if (p.by && profiles[p.by] && profiles[p.by].name) metaBits.push("added by "+profiles[p.by].name);
+      if (p.booked) metaBits.push("Booked");
+      if (metaBits.length) b.appendChild(el("div","meta",metaBits.join(" · ")));
+      if (p.notes) b.appendChild(el("div","notes",p.notes));
+      row.appendChild(b);
+      const acts = el("div","acts");
+      const bk = el("button","linkbtn",p.booked?"Unmark booked":"Mark booked"); bk.type="button"; bk.onclick=()=>patch(p,{booked:!p.booked});
+      const rm = el("button","linkbtn","Remove"); rm.type="button";
+      rm.onclick = ()=>{ if (rm.dataset.armed){ removePick(p); } else { rm.dataset.armed="1"; rm.textContent="Tap again to remove"; setTimeout(()=>{delete rm.dataset.armed; rm.textContent="Remove";},3000);} };
+      acts.appendChild(bk); acts.appendChild(rm); row.appendChild(acts);
+      list.appendChild(row);
+    });
+  });
+}
+function safeUrl(u){ try{ const x=new URL(u); return /^https?:$/.test(x.protocol)?x.href:"#"; }catch(e){ return "#"; } }
+
+async function addPick(seg, form){
+  const url = form.querySelector(`#url-${seg}`).value.trim();
+  const title = form.querySelector(`#title-${seg}`).value.trim();
+  const price = parseInt(form.querySelector(`#price-${seg}`).value,10) || 0;
+  const notes = form.querySelector(`#notes-${seg}`).value.trim();
+  const status = form.querySelector(`#status-${seg}`);
+  if (safeUrl(url)==="#"){ status.textContent="That link doesn't look right. Paste the full https:// address."; return; }
+  const doc = {seg, url, title: title.slice(0,120), price, notes: notes.slice(0,500), booked:false, at:Date.now(), votes:{}, by: me||null};
+  if (me) doc.votes[me] = true;
+  if (shared){
+    status.textContent = "Saving…";
+    try { await db.collection("picks").add(doc); status.textContent=""; form.reset(); form.classList.remove("open"); }
+    catch(e){ status.textContent = e && e.code==="permission_denied" ? "You can view this list but not add to it. Ask the owner for edit access." : "Couldn't save. Try again."; }
+  } else {
+    doc._local = true; doc._id = "l"+Date.now(); picks.push(doc); saveLocal(); form.reset(); form.classList.remove("open"); render();
+  }
+}
+async function patch(p, data){
+  if (shared && p._id && !p._local){ try{ await db.collection("picks").doc(p._id).update(data);}catch(e){} }
+  else { Object.assign(p,data); saveLocal(); render(); }
+}
+function toggleVote(p){
+  const key = me || "me";
+  const on = !(p.votes && p.votes[key]);
+  if (shared && !p._local) patch(p,{votes:{[key]:on}});
+  else { p.votes = Object.assign({},p.votes,{[key]:on}); saveLocal(); render(); }
+}
+async function removePick(p){
+  if (shared && !p._local){ try{ await db.collection("picks").doc(p._id).delete(); }catch(e){} }
+  else { picks = picks.filter(x=>x!==p); saveLocal(); render(); }
+}
+
+picks = localPicks(); render();
+
+(async ()=>{
+  if (!window.claude || !window.claude.use) return;
+  try {
+    const [d,u] = await Promise.all([claude.use("db"), claude.use("user")]);
+    userNs = u;
+    if (u){ try { me = await u.id(); } catch(e){} }
+    if (!d) return;
+    db = d; shared = true;
+    document.getElementById("saveNote").textContent = "Shortlists are shared with everyone who can open this page.";
+    db.collection("picks").onSnapshot(snap=>{
+      picks = snap.docs.map(s=>Object.assign({_id:s.id}, s.data()));
+      render();
+    }, ()=>{});
+  } catch(e){}
+})();
+</script>
+</body>
+</html>
