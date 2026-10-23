@@ -8,85 +8,187 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* Layout: sticky route bar of four legs (IATA codes) → one section per leg: logistics strip, neighborhood cards with live Airbnb links, shared shortlist. */
+/* Layout: sticky stop bar (Overview + 4 IATA stops + shortlist count) → hero with route line and budget → flight board → one section per stop with tabs: Picks / Neighborhoods / All stays / Shortlist. */
 :root{
-  --bg:#F2F5F3; --surface:#FFFFFF; --ink:#14211D; --muted:#5A6B65; --line:#D6DFDA;
-  --accent:#0C7A63; --accent-ink:#FFFFFF; --accent-soft:#DDEFE9;
-  --vn:#C2412A; --th:#2F5BA8; --good:#1F8A4C; --warn:#A86B12;
+  --bg:#F3F5F4; --surface:#FFFFFF; --sunk:#EAEFED; --ink:#11201C; --muted:#5A6A65; --line:#D8E0DD;
+  --accent:#0B7A62; --accent-ink:#FFFFFF; --accent-soft:#DFEFE9;
+  --vn:#C2412A; --vn-soft:#F7E3DE; --th:#2C55A3; --th-soft:#E1E8F6;
+  --warn:#9A5E0C; --warn-soft:#FBF0DF; --good:#1D7F47;
+  --shadow:0 1px 2px rgba(17,32,28,.06),0 4px 16px rgba(17,32,28,.06);
   --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
   --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:14px;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0F1614; --surface:#18221F; --ink:#E6EEEA; --muted:#97A8A1; --line:#2A3833;
-  --accent:#3FC3A0; --accent-ink:#06231B; --accent-soft:#1B3A31;
-  --vn:#F07A60; --th:#7EA4F0; --good:#5FD08E; --warn:#E3A84A; color-scheme:dark}}
+  --bg:#0E1513; --surface:#17211E; --sunk:#121B18; --ink:#E5EDE9; --muted:#97A7A1; --line:#283632;
+  --accent:#3CC29E; --accent-ink:#04221A; --accent-soft:#183830;
+  --vn:#F07B61; --vn-soft:#3A221D; --th:#83A6F0; --th-soft:#1C2740;
+  --warn:#E6AA4E; --warn-soft:#33281A; --good:#5FD08E;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0F1614; --surface:#18221F; --ink:#E6EEEA; --muted:#97A8A1; --line:#2A3833;
-  --accent:#3FC3A0; --accent-ink:#06231B; --accent-soft:#1B3A31;
-  --vn:#F07A60; --th:#7EA4F0; --good:#5FD08E; --warn:#E3A84A; color-scheme:dark}
+  --bg:#0E1513; --surface:#17211E; --sunk:#121B18; --ink:#E5EDE9; --muted:#97A7A1; --line:#283632;
+  --accent:#3CC29E; --accent-ink:#04221A; --accent-soft:#183830;
+  --vn:#F07B61; --vn-soft:#3A221D; --th:#83A6F0; --th-soft:#1C2740;
+  --warn:#E6AA4E; --warn-soft:#33281A; --good:#5FD08E;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25); color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0}
-body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body)}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--body)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
 a{color:var(--accent)}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.mono{font-family:var(--mono);letter-spacing:.02em}
-.label{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.mono{font-family:var(--mono)}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600}
+.vn{--c:var(--vn);--cs:var(--vn-soft)} .th{--c:var(--th);--cs:var(--th-soft)}
+svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
-header.top{padding-block:28px 18px}
-header.top h1{font-size:clamp(30px,6vw,52px);font-weight:800;letter-spacing:-.02em}
-header.top p{color:var(--muted);margin:8px 0 0;max-width:60ch}
+/* Top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:12px;height:56px}
+.brand{display:flex;align-items:center;gap:8px;font:700 15px/1 var(--display);white-space:nowrap;color:var(--ink);text-decoration:none}
+.brand .dot{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--vn) 0 50%,var(--th) 50% 100%)}
+.stops{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;margin-left:8px}
+.stops::-webkit-scrollbar{display:none}
+.stops a{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;text-decoration:none;color:var(--muted);font-weight:500;font-size:14px;white-space:nowrap}
+.stops a .code{font-family:var(--mono);font-size:12px;padding:1px 5px;border-radius:4px;background:var(--sunk);color:var(--ink)}
+.stops a:hover{background:var(--sunk);color:var(--ink)}
+.stops a[aria-current="true"]{background:var(--accent-soft);color:var(--ink)}
+.stops a[aria-current="true"] .code{background:var(--c,var(--accent));color:#fff}
+.sl-count{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 13px/1 var(--body);padding:8px 11px;border-radius:999px;white-space:nowrap}
+.sl-count b{background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:2px 7px;font-size:12px}
+@media (max-width:640px){.brand span{display:none}.stops a .nm{display:none}}
 
-.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-top:18px}
-.ctl{display:flex;align-items:center;gap:8px}
-.step{display:inline-flex;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
-.step button{border:0;background:none;color:var(--ink);width:34px;height:34px;font-size:18px;cursor:pointer;border-radius:999px}
-.step span{min-width:26px;text-align:center;align-self:center;font-variant-numeric:tabular-nums;font-weight:600}
-select,input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
-.toggle{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+/* Hero */
+.hero{padding-block:40px 28px}
+.hero h1{font-size:clamp(34px,6.2vw,60px);font-weight:800;letter-spacing:-.025em;margin-top:8px}
+.hero p.lede{color:var(--muted);max-width:62ch;margin:12px 0 0;font-size:16px}
+.route{margin-top:28px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;position:relative}
+.route::before{content:"";position:absolute;left:8%;right:8%;top:23px;border-top:2px dashed var(--line);z-index:0}
+.stopcard{position:relative;z-index:1;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--ink);padding:14px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.stopcard:hover{transform:translateY(-2px);border-color:var(--c)}
+.stopcard .pin{width:20px;height:20px;border-radius:50%;background:var(--c);box-shadow:0 0 0 4px var(--surface),0 0 0 5px var(--c)}
+.stopcard .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.stopcard .num{font:500 12px var(--mono);color:var(--muted)}
+.stopcard h3{font-size:20px;margin-top:6px}
+.stopcard .when{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stopcard .range{font-size:13px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.stopcard .range b{font-weight:600}
+@media (max-width:820px){.route{grid-template-columns:repeat(2,minmax(0,1fr))}.route::before{display:none}}
+.stats{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:22px}
+.stat{display:flex;flex-direction:column}
+.stat b{font:700 22px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
 
-nav.route{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-block:1px solid var(--line)}
-nav.route .wrap{display:flex;gap:4px;overflow-x:auto;padding-block:8px;scrollbar-width:none}
-nav.route a{flex:1 0 auto;display:flex;flex-direction:column;text-decoration:none;color:var(--ink);padding:6px 12px;border-radius:8px;min-width:96px}
-nav.route a:hover{background:var(--accent-soft)}
-nav.route .code{font-family:var(--mono);font-size:17px;font-weight:500}
-nav.route .when{font-size:12px;color:var(--muted)}
-nav.route .arrow{align-self:center;color:var(--muted);flex:0 0 auto}
+/* Flight board */
+.board{margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.board-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.board-head h2{font-size:18px}
+.flights{overflow-x:auto}
+.flights table{width:100%;border-collapse:collapse;min-width:640px;font-size:14px}
+.flights th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;padding:10px 16px;background:var(--sunk)}
+.flights td{padding:12px 16px;border-top:1px solid var(--line);vertical-align:top;font-variant-numeric:tabular-nums}
+.flights .rt{font-family:var(--mono);font-size:14px;white-space:nowrap}
+.flights .via{color:var(--muted);font-size:12px}
+@media (max-width:640px){
+  .flights table{min-width:0}
+  .flights thead{display:none}
+  .flights tr{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:12px 16px;border-top:1px solid var(--line)}
+  .flights tbody tr:first-child{border-top:0}
+  .flights td{padding:0;border:0}
+  .flights td:nth-child(1){grid-column:1/-1;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  .flights td:nth-child(3){grid-column:1/-1;grid-row:3}
+  .flights td:nth-child(4){text-align:right;font-size:13px;color:var(--muted)}
+}
+.flag{display:inline-block;font:600 11px var(--mono);padding:2px 6px;border-radius:4px;background:var(--warn-soft);color:var(--warn);margin-left:6px;white-space:nowrap}
 
-section.leg{padding-block:40px 8px;scroll-margin-top:72px}
-.leg-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;border-bottom:2px solid var(--ink);padding-bottom:10px}
-.leg-head h2{font-size:clamp(26px,4.4vw,38px);font-weight:700;letter-spacing:-.01em}
-.flag{font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:4px;color:#fff}
-.flag.vn{background:var(--vn)} .flag.th{background:var(--th)}
-.leg-head .dates{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--muted)}
-.leg-head .dates b{color:var(--ink)}
+/* Legs */
+section.leg{padding-block:56px 8px;scroll-margin-top:64px}
+.leg-head{display:grid;grid-template-columns:1fr auto;gap:8px 20px;align-items:end;padding-bottom:16px;border-bottom:2px solid var(--ink)}
+.leg-head .eyebrow{display:flex;align-items:center;gap:8px}
+.leg-head .eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.leg-head h2{font-size:clamp(30px,5vw,46px);font-weight:700;letter-spacing:-.015em;margin-top:6px}
+.leg-head h2 small{font:500 .42em var(--body);color:var(--muted);margin-left:10px;letter-spacing:0}
+.leg-head .dates{text-align:right;font-variant-numeric:tabular-nums}
+.leg-head .dates b{display:block;font:700 18px var(--display)}
+.leg-head .dates span{font-size:13px;color:var(--muted)}
+@media (max-width:560px){.leg-head{grid-template-columns:1fr}.leg-head .dates{text-align:left}}
+.logi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:18px}
+.logi > div{background:var(--surface);padding:12px 14px;display:flex;gap:10px;min-width:0}
+.logi svg{color:var(--c);margin-top:3px}
+.logi .k{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.logi .v{font-size:14px;font-weight:500}
+.logi .s{font-size:12.5px;color:var(--muted)}
+@media (max-width:760px){.logi{grid-template-columns:1fr}}
+.callout{display:flex;gap:10px;margin-top:12px;padding:11px 14px;border-radius:12px;background:var(--warn-soft);color:var(--ink);font-size:14px}
+.callout svg{color:var(--warn);margin-top:2px}
 
-.logi{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0 4px}
-.logi div{min-width:0;font-size:14px}
-.logi .flight{font-family:var(--mono);font-size:13px}
-.note{margin-top:12px;font-size:14px;padding:10px 12px;border-left:3px solid var(--warn);background:var(--surface);border-radius:0 8px 8px 0}
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-top:24px;padding:4px;background:var(--sunk);border-radius:12px;overflow-x:auto;scrollbar-width:none;width:max-content;max-width:100%}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{border:0;background:none;color:var(--muted);font:600 14px var(--body);padding:8px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;display:flex;gap:6px;align-items:center}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.tabs .n{font:500 11px var(--mono);background:var(--line);border-radius:999px;padding:1px 6px;color:var(--ink)}
+.tabs button[aria-selected="true"] .n{background:var(--accent);color:var(--accent-ink)}
+.panel{margin-top:18px}
+.panel-intro{display:flex;justify-content:space-between;align-items:baseline;gap:8px 16px;flex-wrap:wrap;margin-bottom:14px}
+.panel-intro p{margin:0;color:var(--muted);font-size:13.5px}
 
-.hoods{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:20px}
-.hood{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.hood h3{font-size:19px;font-weight:700}
-.hood .local{font-size:13px;color:var(--muted)}
-.hood p{margin:0;font-size:14px}
-.tags{display:flex;flex-wrap:wrap;gap:6px}
-.tag{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--ink)}
-.tag.pick{background:var(--accent);color:var(--accent-ink);font-weight:600}
-.hood .go{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;font-size:14px;padding:8px 14px;border-radius:8px;cursor:pointer}
+/* Cards */
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media (max-width:980px){.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:860px){.grid3{grid-template-columns:1fr}}
+@media (max-width:460px){.grid4{grid-template-columns:1fr}}
+.stay{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;min-width:0;transition:box-shadow .15s,transform .15s}
+.stay:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.stay.is-pick{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+.stay .ph{position:relative;aspect-ratio:3/2;max-width:100%;display:flex;align-items:flex-end;padding:12px;text-decoration:none;color:var(--ink);font-size:12px;background:linear-gradient(135deg,var(--cs),var(--sunk))}
+.stay .ph .ph-t{opacity:.75}
+.stay .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stay .badge{position:absolute;top:10px;left:10px;z-index:1;background:var(--surface);color:var(--ink);font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.stay .badge.lbl{background:var(--accent);color:var(--accent-ink)}
+.stay .ix{position:absolute;top:10px;right:10px;z-index:1;font:500 11px var(--mono);background:rgba(17,32,28,.72);color:#fff;padding:3px 7px;border-radius:6px}
+.stay .info{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.stay .row1{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--muted)}
+.stay .row1 .stars{color:var(--ink);font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.stay .nm{font-size:14.5px;line-height:1.35;font-weight:500}
+.stay .why{margin:0;font-size:13.5px;line-height:1.5;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-size:11.5px;padding:3px 8px;border-radius:999px;background:var(--sunk);color:var(--ink);white-space:nowrap;border:1px solid var(--line)}
+.is-pick .chip{background:var(--accent-soft);border-color:transparent}
+.stay .bd{font-size:12px;color:var(--muted)}
+.stay .foot{margin-top:auto;padding-top:10px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.price b{font:700 17px var(--display);font-variant-numeric:tabular-nums}
+.price span{display:block;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.acts{display:flex;gap:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none;font:600 13.5px var(--body);padding:8px 13px;border-radius:9px;cursor:pointer;white-space:nowrap}
+.btn:hover{filter:brightness(1.06)}
 .btn.ghost{background:transparent;color:var(--accent)}
-.btn.small{padding:5px 10px;font-size:13px}
+.btn.icon{padding:8px;width:36px}
+.btn.on{background:var(--accent-soft);border-color:var(--accent-soft);color:var(--ink)}
+.btn.small{padding:6px 10px;font-size:13px}
 
-.shortlist{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
-.sl-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
-.sl-head h3{font-size:18px}
-.picks{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-.pick{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:12px;border:1px solid var(--line);border-radius:10px}
+.hood{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.hood h3{font-size:18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hood .local{font-size:12.5px;color:var(--muted)}
+.hood p{margin:0;font-size:14px;color:var(--muted)}
+.hood .tag-pick{font:600 11px var(--body);background:var(--accent);color:var(--accent-ink);padding:2px 8px;border-radius:999px}
+.hood .go{margin-top:auto;padding-top:6px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:14px;font-size:14px}
+.toolbar label{display:flex;align-items:center;gap:7px;cursor:pointer}
+select,input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+
+.group + .group{margin-top:22px}
+.group h4{font:600 15px var(--body);margin-bottom:10px;display:flex;gap:8px;align-items:baseline}
+.group h4 span{font-weight:400;color:var(--muted);font-size:13px}
+
+/* Shortlist */
+.picks{display:flex;flex-direction:column;gap:10px}
+.pick{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .pick.booked{border-color:var(--good);box-shadow:inset 3px 0 0 var(--good)}
 .pick .vote{display:flex;flex-direction:column;align-items:center;border:1px solid var(--line);background:none;color:var(--ink);border-radius:8px;padding:4px 8px;cursor:pointer;font-variant-numeric:tabular-nums;min-width:44px}
 .pick .vote.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -94,85 +196,60 @@ section.leg{padding-block:40px 8px;scroll-margin-top:72px}
 .pick .ttl{font-weight:600;overflow-wrap:anywhere}
 .pick .meta{font-size:13px;color:var(--muted)}
 .pick .notes{font-size:14px;margin-top:4px;overflow-wrap:anywhere}
-.pick .acts{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.pick .pa{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
 .linkbtn{background:none;border:0;color:var(--muted);font:inherit;font-size:13px;cursor:pointer;padding:2px}
 .linkbtn:hover{color:var(--ink)}
-.empty{color:var(--muted);font-size:14px;margin:10px 0 0}
-form.add{display:none;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:14px;border:1px dashed var(--line);border-radius:12px}
+form.add{display:none;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
 form.add.open{display:grid}
 form.add .full{grid-column:1/-1}
 form.add input,form.add textarea{width:100%}
-form.add .row{display:flex;gap:8px;justify-content:flex-end}
-.status{font-size:13px;color:var(--muted)}
-.favs{margin-top:28px;display:flex;flex-direction:column;gap:22px}
-.favs > h3{font-size:22px;font-weight:700}
-.favs .sub{color:var(--muted);font-size:13px;margin-top:-16px}
-.fav-row h4{margin:0 0 10px;font:600 15px/1.2 var(--body);display:flex;gap:8px;align-items:baseline}
-.fav-row h4 span{color:var(--muted);font-weight:400;font-size:13px}
-.fav-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.pick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.pick-card{border-color:var(--accent)}
-.stay .badge.lbl{background:var(--accent);color:var(--accent-ink)}
-.stay .why{margin:4px 0 2px;font-size:14px;line-height:1.45}
-.chips{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 2px}
-.chip{font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--ink);white-space:nowrap}
-details.more{border-top:1px solid var(--line);padding-top:12px}
-details.more summary{cursor:pointer;font-weight:600;color:var(--accent);padding:6px 0;list-style-position:outside}
-details.more[open] summary{margin-bottom:14px}
-details.more .fav-row + .fav-row{margin-top:18px}
-@media (max-width:900px){.pick-grid{grid-template-columns:1fr}}
-.stay{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;min-width:0}
-.stay .ph{text-decoration:none;position:relative;aspect-ratio:4/3;max-width:100%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;text-align:center;padding:8px}
-.stay .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.stay .badge{position:absolute;top:8px;left:8px;z-index:1;background:var(--surface);color:var(--ink);font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.stay .info{padding:10px 12px 12px;display:flex;flex-direction:column;gap:3px;flex:1}
-.stay .row1{display:flex;justify-content:space-between;gap:8px;font-size:13px}
-.stay .type{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.stay .stars{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
-.stay .nm{font-size:14px;line-height:1.35}
-.stay .bd{font-size:12px;color:var(--muted)}
-.stay .pr{margin-top:auto;padding-top:6px;font-size:14px;font-variant-numeric:tabular-nums}
-.stay .pr b{font-weight:600}
-.stay .pr span{color:var(--muted);font-size:12px}
-.stay .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
-.stay .acts .btn{flex:1;justify-content:center}
-@media (max-width:900px){.fav-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:420px){.fav-grid{grid-template-columns:1fr}}
-footer{padding-block:40px 48px;color:var(--muted);font-size:13px}
-@media (max-width:560px){
-  form.add{grid-template-columns:1fr}
-  .pick{grid-template-columns:auto 1fr}
-  .pick .acts{grid-column:1/-1;flex-direction:row;justify-content:flex-end}
-  .leg-head .dates{margin-left:0;width:100%}
-}
-@media (prefers-reduced-motion:no-preference){.btn,.vote{transition:background .15s,color .15s}}
+form.add .row{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.status{font-size:13px;color:var(--muted);margin-right:auto}
+@media (max-width:560px){form.add{grid-template-columns:1fr}.pick{grid-template-columns:auto 1fr}.pick .pa{grid-column:1/-1;flex-direction:row;justify-content:flex-end}}
+
+footer{margin-top:64px;border-top:1px solid var(--line);background:var(--surface)}
+footer .wrap{padding-block:24px 36px;display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;color:var(--muted);font-size:13px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);opacity:0;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;font-weight:500;z-index:40;transition:opacity .2s,transform .2s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){.stay,.stopcard,.toast{transition:none}}
 </style>
 </head>
 <body>
 
-<header class="top wrap">
-  <div class="label">May 29 – June 13, 2027 · 14 nights</div>
-  <h1>Vietnam &amp; Thailand Stays</h1>
-  <p>Three picks per city from your Airbnb wishlist, each with why it's worth a look. The rest are one tap away under each city. Add the ones you like to each city's shortlist, or open a neighborhood search for more.</p>
-  <div class="controls">
-    <div class="ctl"><span class="label">Guests</span><b>2 adults</b></div>
-    <label class="ctl" for="maxPrice"><span class="label">Max / night</span>
-      <select id="maxPrice">
-        <option value="">Any</option><option value="40">$40</option><option value="60">$60</option><option value="80">$80</option>
-        <option value="120">$120</option><option value="180">$180</option><option value="250">$250</option>
-      </select>
-    </label>
-    <label class="toggle" for="entire"><input type="checkbox" id="entire" checked> Entire place only</label>
-    <label class="toggle" for="fav"><input type="checkbox" id="fav" checked> Guest favorites only</label>
-    <a class="btn ghost small" href="https://www.airbnb.com/wishlists/2229564432" target="_blank" rel="noopener">Open Airbnb wishlist (57)</a>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#overview"><i class="dot"></i><span>VN · TH 2027</span></a>
+    <nav class="stops" id="stops" aria-label="Stops"></nav>
+    <span class="sl-count" title="Listings on your shortlists">Shortlist <b id="slTotal">0</b></span>
   </div>
 </header>
 
-<nav class="route" aria-label="Trip legs"><div class="wrap" id="routeNav"></div></nav>
+<main>
+  <section class="hero wrap" id="overview">
+    <div class="eyebrow">May 29 – Jun 13, 2027 · 2 guests</div>
+    <h1>Vietnam &amp; Thailand Stays</h1>
+    <p class="lede">Four stops, fourteen nights. Each stop has three picks from your Airbnb wishlist, a neighborhood guide, and a shared shortlist to vote on.</p>
+    <div class="route" id="route"></div>
+    <div class="stats" id="stats"></div>
+  </section>
 
-<main class="wrap" id="legs"></main>
+  <section class="wrap" aria-labelledby="fl-h">
+    <div class="board">
+      <div class="board-head"><h2 id="fl-h">Flights</h2><span class="eyebrow">All times local</span></div>
+      <div class="flights"><table><thead><tr><th>Date</th><th>Route</th><th>Times</th><th>Airline</th></tr></thead><tbody id="flightRows"></tbody></table></div>
+    </div>
+  </section>
 
-<footer class="wrap"><span id="saveNote">Your shortlist is saved in this browser only.</span> Airbnb opens in a new tab; prices there include fees only once you set dates, which these links already do.</footer>
+  <div class="wrap" id="legs"></div>
+</main>
+
+<footer><div class="wrap">
+  <span id="saveNote">Your shortlist is saved in this browser only.</span>
+  <span>Listings and prices from Airbnb, Oct 23, 2026. Totals for 2 guests before taxes.</span>
+  <a href="https://www.airbnb.com/wishlists/2229564432" target="_blank" rel="noopener">Airbnb wishlist ↗</a>
+</div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 const LEGS = [
@@ -234,7 +311,6 @@ const LEGS = [
       text:"Quiet beach 10 min from the airport. Split the stay: 2 nights in Kata, then your last night here so the midnight airport run is easy.", tags:["10 min to HKT","Last night"]}
    ]}
 ];
-
 const LISTINGS = {"Old Quarter": [{"id": "1727670191784717423", "type": "Apartment in Quận Hoàn Kiếm", "name": "3 balconies, a view bathtub, and a private kitchen in the heart of the Old Quarter", "beds": "1 bedroom · 1 queen bed · 1.5 baths", "rating": "5.0", "reviews": 22, "total": 227, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1727670191784717423/original/d24c53aa-9ab6-44e5-a1e2-2168e36b6b0b.png?im_w=720"}, {"id": "1686150466866874829", "type": "Home in Quận Hoàn Kiếm", "name": "4-floor hideaway with a private hot stone sauna, a Jacuzzi, and lake access", "beds": "2 bedrooms · 3 beds · 2 baths", "rating": "5.0", "reviews": 16, "total": 466, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1686150466866874829/original/a7432fb6-5e84-4054-aece-2aeb158f465d.png?im_w=720"}, {"id": "1656634003195965093", "type": "Apartment in Quận Hoàn Kiếm", "name": "50m from Hoan Kiem Lake, with a private balcony, a jacuzzi, and a washer-dryer", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "4.92", "reviews": 36, "total": 258, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1656634003195965093/original/362861c6-ca6d-4cb7-a4b6-3db67417cd55.png?im_w=720"}, {"id": "1657754780217560399", "type": "Townhouse in Quận Hoàn Kiếm", "name": "French-era hideaway in the Old Quarter, with a private entrance and a patio", "beds": "2 bedrooms · 3 beds · 1.5 baths", "rating": "4.96", "reviews": 49, "total": 226, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1657754780217560399/original/cdcd7fe7-a9b3-4870-bc83-6b54755be18e.jpeg?im_w=720"}], "French Quarter": [{"id": "1062443938733706411", "type": "Apartment in Quận Hoàn Kiếm", "name": "300m from Hoan Kiem Lake, with a private balcony, a private backyard, a kitchen", "beds": "2 bedrooms · 2 queen beds · 2 baths", "rating": "4.95", "reviews": 152, "total": 289, "top": 1, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-1062443938733706411/original/7843f061-4a1d-4df7-9cd4-be8801f3ae21.jpeg?im_w=720"}, {"id": "1779113431638784734", "type": "Apartment in Quận Hoàn Kiếm", "name": "Brand-new 5th-floor studio with a balcony, 2 min from Hoan Kiem Lake", "beds": "1 bedroom · 1 bed · 1 bath", "rating": "5.0", "reviews": 7, "total": 248, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1779113431638784734/original/ee751238-4215-4701-81c6-fc8a023fa4d7.png?im_w=720"}, {"id": "1190637110533392794", "type": "Home in Quận Hoàn Kiếm", "name": "Rooftop loft with 180° panorama views, a jacuzzi, and a fully equipped kitchen", "beds": "1 bedroom · 2 beds · 1 bath", "rating": "4.98", "reviews": 233, "total": 263, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTE5MDYzNzExMDUzMzM5Mjc5NA%3D%3D/original/0a525184-2ff1-4a98-aa0f-95008be81e75.jpeg?im_w=720"}, {"id": "1765617973489744950", "type": "Apartment in Quận Hoàn Kiếm", "name": "Indochine loft with a mezzanine, a balcony, and original wooden beams", "beds": "1 bedroom · 2 double beds · 1 bath", "rating": "5.0", "reviews": 17, "total": 280, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1765617973489744950/original/04215ecc-7559-42e2-8c4f-aada15b331de.jpeg?im_w=720"}], "West Lake": [{"id": "1601514694353032364", "type": "Apartment in Quận Tây Hồ", "name": "5-min walk to West Lake, with a private balcony, a full kitchen, and a washer", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "5.0", "reviews": 54, "total": 97, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1601514694353032364/original/73f2aa7c-07c4-466a-8390-c3ab1afd3fd9.png?im_w=720"}, {"id": "1437504524802187182", "type": "Apartment in Quận Tây Hồ", "name": "Spacious and modern, with a pool, lake access, a patio, and alfresco dining", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "4.96", "reviews": 100, "total": 109, "top": 1, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-1437504524802187182/original/adc0a5cf-0571-4fdc-b4cb-b33a63e64276.jpeg?im_w=720"}, {"id": "1353528067820094048", "type": "Condo in Quận Tây Hồ", "name": "Luxury stay with a pool, a private balcony, and West Lake views from the rooftop", "beds": "1 bedroom · 2 beds · 1 bath", "rating": "4.97", "reviews": 59, "total": 190, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1353528067820094048/original/89119726-5ce0-42a0-bfd7-df351d548e0d.jpeg?im_w=720"}, {"id": "1508444681497546446", "type": "Apartment in Ngoc Ha", "name": "Waterfront with a 3-min walk to West Lake, free airport transfer, and a bathtub", "beds": "1 bedroom · 1 bed · 1 bath", "rating": "4.97", "reviews": 75, "total": 222, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1508444681497546446/original/07edf942-1443-4b72-afcd-787e8f1a9c67.jpeg?im_w=720"}], "Ba Dinh": [{"id": "1665741973676478046", "type": "Apartment in Ô Chợ Dừa", "name": "City views from a private balcony, 5 min from the Temple of Literature", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "5.0", "reviews": 45, "total": 90, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1665741973676478046/original/af394cfd-fbc7-44ee-b133-798352aa07dd.png?im_w=720"}, {"id": "1736945955419265181", "type": "Apartment in Ba Dinh", "name": "Historic French colonial charm with a private green balcony and high ceilings", "beds": "2 bedrooms · 1 king bed · 1 bath", "rating": "5.0", "reviews": 23, "total": 202, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1736945955419265181/original/e081f7c3-a229-4c2e-8e44-997b54c3df04.jpeg?im_w=720"}, {"id": "1141839384324305344", "type": "Apartment in Quận Hoàn Kiếm", "name": "Panoramic views with a jacuzzi, a full kitchen, and 5-star service", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "4.95", "reviews": 274, "total": 162, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTE0MTgzOTM4NDMyNDMwNTM0NA%3D%3D/original/62e703c8-090a-434c-91ef-6e1e94631ec5.jpeg?im_w=720"}, {"id": "1367173911885496428", "type": "Townhouse in Quận Hoàn Kiếm", "name": "Train Street view with a balcony, a full kitchen, and a 5-min walk to the Old Quarter", "beds": "1 bedroom · 1 bed · 1 bath", "rating": "4.97", "reviews": 215, "total": 122, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTM2NzE3MzkxMTg4NTQ5NjQyOA==/original/f0b6a895-7de2-420e-9cab-70239123ca12.jpeg?im_w=720"}], "District 1": [{"id": "1533917032549617471", "type": "Apartment in Ho Chi Minh", "name": "Stylish 45m2 Japandi hideaway with a wide-view balcony and a workspace", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "4.99", "reviews": 89, "total": 209, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1533917032549617471/original/5d5ae369-09a9-4c54-bf3a-f80892779fd6.jpeg?im_w=720"}, {"id": "1463788446366742878", "type": "Apartment in Ho Chi Minh", "name": "Modern minimalist 2nd-floor stay in a historic French building with a balcony", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "4.96", "reviews": 101, "total": 173, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1463788446366742878/original/4fc31a95-d213-4c8a-8000-b6a9f3572bef.jpeg?im_w=720"}, {"id": "1130820184224317486", "type": "Apartment in Đa Kao", "name": "Modern minimalist 1BR with a private balcony, a full kitchen, and a workspace", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "4.99", "reviews": 159, "total": 165, "top": 0, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-1130820184224317486/original/a17f39da-83e2-45c6-9404-2c298a1018af.jpeg?im_w=720"}, {"id": "1396886973804448786", "type": "Condo in Bến Thành", "name": "Modern studio across from a 10 km² park, with housekeeping 3x a week", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "4.97", "reviews": 73, "total": 124, "top": 0, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-1396886973804448786/original/af4245e7-5bbf-4072-b067-e01ac6baf259.jpeg?im_w=720"}], "District 3": [{"id": "1638153140551254892", "type": "Apartment in phường 11", "name": "Modern hideaway with a huge balcony, a washer, and free housekeeping", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "5.0", "reviews": 12, "total": 99, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1638153140551254892/original/742ffa84-ad1c-493c-95b8-67c1286b703c.jpeg?im_w=720"}, {"id": "1268542449405315414", "type": "Apartment in phường 11", "name": "2.5km from Notre-Dame Basilica, with free housekeeping, a kitchen, and a washer", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "4.95", "reviews": 21, "total": 107, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1268542449405315414/original/05e1d7f5-49c5-45ce-b81b-06c84465120d.jpeg?im_w=720"}, {"id": "1772268427823492409", "type": "Apartment in Ho Chi Minh City", "name": "Modern studio with a private balcony, a projector, a washer, and free parking", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "5.0", "reviews": 7, "total": 93, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1772235284787378273/original/d6b52d77-786e-4e9c-ba23-a2a055deb3ba.jpeg?im_w=720"}], "Thao Dien": [{"id": "1671713031594332091", "type": "Apartment in Ho Chi Minh City", "name": "Brand-new top-floor studio with a balcony, open views, and a rooftop sun deck", "beds": "1 bedroom · 1 bed · 1 bath", "rating": "5.0", "reviews": 23, "total": 128, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1671713031594332091/original/0c0a6f86-3223-4a66-ac5f-9d8e4a396bc9.jpeg?im_w=720"}, {"id": "1326172669268706395", "type": "Home in Ho Chi Minh", "name": "Bar-styled hideaway above a café, with a daily meal, an in-room bar, and a safe", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "4.94", "reviews": 133, "total": 250, "top": 0, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-1326172669268706395/original/a36221f6-6fb0-4af6-8523-398697af36ed.jpeg?im_w=720"}], "Ari": [{"id": "1318868383842019266", "type": "Apartment in Phaya Thai", "name": "Newly renovated with city and sunset views, a pool, and midcentury decor", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "4.96", "reviews": 114, "total": 230, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1318868383842019266/original/9c568140-86dc-4027-bb73-c9362016e440.jpeg?im_w=720"}, {"id": "1195343771352141037", "type": "Condo in Khet Phaya Thai", "name": "Top-floor city views, with a private balcony, a pool, a sauna, and free parking", "beds": "1 bedroom · 2 king beds · 1 bath", "rating": "4.97", "reviews": 62, "total": 318, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1188335358272576355/original/2e20f4f9-d36a-4654-8888-9a1bdad62b75.jpeg?im_w=720"}, {"id": "44668880", "type": "Apartment in Phaya Thai", "name": "Newly renovated with a king bed, a private balcony, and a mini pantry", "beds": "1 king bed · 1 bath", "rating": "4.89", "reviews": 168, "total": 172, "top": 0, "img": "https://a0.muscache.com/im/pictures/3f5c1707-f233-45cc-9620-b3cf62e7309b.jpg?im_w=720"}, {"id": "20869092", "type": "Apartment in Bangkok", "name": "7-min walk to BTS, with an indoor pool, free parking, and a tuktuk service", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "4.88", "reviews": 3593, "total": 223, "top": 0, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-20869092/original/2493c948-27e9-4b16-8b0b-f31166af8917.jpeg?im_w=720"}], "Sukhumvit": [{"id": "48372921", "type": "Apartment in Khet Watthana", "name": "Brand-new, 50m from BTS Thonglor, with a pool, a workspace, and big windows", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "4.98", "reviews": 169, "total": 240, "top": 1, "img": "https://a0.muscache.com/im/pictures/392edc96-8844-4ded-bc0f-72f931547d4b.jpg?im_w=720"}, {"id": "879449809604020079", "type": "Apartment in Khet Watthana", "name": "Chino-Portuguese mansion with a hot tub, a private entrance, a patio, and a garden", "beds": "1 bedroom · 1 bed · 1 bath", "rating": "4.98", "reviews": 60, "total": 606, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6ODc5NDQ5ODA5NjA0MDIwMDc5/original/58bc448f-d13d-48b2-a2ab-6ec8c57258a3.jpeg?im_w=720"}, {"id": "1543235127911541508", "type": "Apartment in Watthana", "name": "High-floor Thong Lo stay with a private balcony, a pool, a sauna, and a jacuzzi", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "4.97", "reviews": 32, "total": 245, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1543235127911541508/original/f5402e61-cbc9-4548-9a98-db74f4cf070e.jpeg?im_w=720"}, {"id": "1157517111616376370", "type": "Condo in Khet Khlong Toei", "name": "Luxury 7th-floor unit 3 min from BTS, with a pool, a balcony, and free parking", "beds": "1 bedroom · 2 beds · 1 bath", "rating": "4.91", "reviews": 123, "total": 266, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1157517111616376370/original/fc6c507e-1fc8-4e0b-88da-4aff2b771f51.jpeg?im_w=720"}], "Silom / Sathorn": [{"id": "737979074521573008", "type": "Condo in Khet Sathon", "name": "17th-floor condo with a balcony, a pool, a jacuzzi, a sauna, and free parking", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "4.95", "reviews": 125, "total": 234, "top": 1, "img": "https://a0.muscache.com/im/pictures/c8dfa282-e304-46e4-b993-52b87ff865eb.jpg?im_w=720"}, {"id": "8792375", "type": "Apartment in Bangkok", "name": "5-min walk to the skytrain, with a private balcony, a rooftop pool, and Wi-Fi", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "4.91", "reviews": 259, "total": 189, "top": 1, "img": "https://a0.muscache.com/im/pictures/111441109/e3533a41_original.jpg?im_w=720"}, {"id": "1114904195556862236", "type": "Apartment in Bangkok", "name": "Peaceful Sathon stay, with free parking, a full kitchen, and a dining table", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "4.92", "reviews": 122, "total": 155, "top": 1, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-1114904195556862236/original/38e9ffc2-2548-4e99-bcdc-83f028aed510.jpeg?im_w=720"}, {"id": "541226975504238722", "type": "Apartment in Khet Bang Rak", "name": "4-min walk to the MRT, with a kitchen, a bathtub, and in-unit laundry", "beds": "1 bedroom · 1 bed · 1 bath", "rating": "4.94", "reviews": 218, "total": 238, "top": 0, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-541226975504238722/original/d0442a32-7c52-473f-8574-ef52e96b8c1d.jpeg?im_w=720"}], "Riverside": [{"id": "1363473448168628845", "type": "Home in Khet Khlong San", "name": "3-story home near the Chao Phraya River, with a private balcony and workspace", "beds": "2 bedrooms · 3 beds · 2 baths", "rating": "5.0", "reviews": 109, "total": 285, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1363473448168628845/original/a9a70155-d976-4551-ac39-08938d286233.jpeg?im_w=720"}, {"id": "816560363550371726", "type": "Condo in Khet Bang Rak", "name": "50th-floor riverfront views, with a private balcony and a 70-sqm layout", "beds": "2 bedrooms · 3 beds · 1 bath", "rating": "4.95", "reviews": 221, "total": 482, "top": 0, "img": "https://a0.muscache.com/im/pictures/9852f6b5-06c8-4851-8d73-6d901b05c7b9.jpg?im_w=720"}, {"id": "880134368070041293", "type": "Apartment in Khet Thon Buri", "name": "Bright, open-plan studio opposite Avani+ Riverside, steps from the Chao Phraya", "beds": "1 bed · 1 bath", "rating": "4.91", "reviews": 97, "total": 115, "top": 0, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-880134368070041293/original/b89315ab-29bc-485c-9eca-d29afdad1977.jpeg?im_w=720"}, {"id": "22228143", "type": "Condo in Khet Bang Kho Laem", "name": "New condo across from Asiatique, with a private balcony, a pool, and a kitchenette", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "4.9", "reviews": 231, "total": 154, "top": 0, "img": "https://a0.muscache.com/im/pictures/e11c0415-9698-4cae-af2f-36a9a16722fb.jpg?im_w=720"}], "Kata / Karon": [{"id": "917228189268252225", "type": "Home in Karon", "name": "Hillside hideaway with jungle views, a private balcony, and daily breakfast", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "5.0", "reviews": 70, "total": 113, "top": 0, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-917228189268252225/original/0feaf490-7a7f-4fee-9abb-4061dde13dc4.jpeg?im_w=720"}, {"id": "898228395704469934", "type": "Villa in Karon", "name": "Villa with a private pool, a jacuzzi, a terrace, alfresco dining, and free parking", "beds": "2 bedrooms · 2 king beds · 3 baths", "rating": "4.95", "reviews": 95, "total": 515, "top": 0, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-898228395704469934/original/b7ffe1b5-e70b-41a9-a3dd-e57f88c91857.jpeg?im_w=720"}, {"id": "1652142808829395075", "type": "Villa in Karon", "name": "Modern villa with a private pool, a private balcony, beach access, and free parking", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "4.83", "reviews": 6, "total": 187, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1652142808829395075/original/71a072d6-5225-48c3-8dec-40cd73c6632e.jpeg?im_w=720"}, {"id": "1566758082152066996", "type": "Apartment in Karon", "name": "Thai-Japandi retreat with a 6th-floor balcony, a resort pool, and city views", "beds": "1 bedroom · 1 queen bed · 1 bath", "rating": "5.0", "reviews": 7, "total": 312, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1566758082152066996/original/33cd56ed-79e0-4d4b-b703-c6e7ea34129f.jpeg?im_w=720"}], "Patong": [{"id": "20415447", "type": "Condo in Pa Tong", "name": "120 sqm super modern home with a rooftop pool, 500m from Patong Beach", "beds": "2 bedrooms · 2 beds · 1 bath", "rating": "4.93", "reviews": 371, "total": 242, "top": 1, "img": "https://a0.muscache.com/im/pictures/4e2fa9d2-f311-4b67-b57c-d317466a1bdc.jpg?im_w=720"}, {"id": "961183686815626210", "type": "Apartment in Pa Tong", "name": "Rooftop pool with sea views, a jacuzzi, a community infinity pool, and free parking", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "4.9", "reviews": 58, "total": 139, "top": 0, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-961183686815626210/original/46f0eed8-bde5-4401-87c0-f421c9d3645f.jpeg?im_w=720"}, {"id": "1433839695125868516", "type": "Apartment in Pa Tong", "name": "5-min walk to Patong Beach, with a pool, a jacuzzi, a patio, and free parking", "beds": "1 bedroom · 1 bed · 1 bath", "rating": "5.0", "reviews": 22, "total": 107, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1433839695125868516/original/f0aa5253-0647-45ff-b471-1c341de61318.jpeg?im_w=720"}, {"id": "1739080994118929709", "type": "Guesthouse in Pa Tong", "name": "Beachfront with stunning ocean views, a private balcony, and a king-size bed", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "5.0", "reviews": 7, "total": 198, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1739080994118929709/original/76ee7cd0-e072-49a2-822c-56903fe7b8ca.jpeg?im_w=720"}], "Phuket Old Town": [{"id": "4981861", "type": "Apartment in Vichit", "name": "1-min walk to Central Floresta, with a private balcony, a 70m pool, free parking", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "4.96", "reviews": 357, "total": 174, "top": 1, "img": "https://a0.muscache.com/im/pictures/62389520/c6e9a07e_original.jpg?im_w=720"}, {"id": "1439040143162240889", "type": "Condo in Talat Yai", "name": "Walkable Phuket Town stay with a rooftop garden, a pool, and free parking", "beds": "1 bedroom · 1 king bed · 1 bath", "rating": "4.86", "reviews": 35, "total": 116, "top": 0, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-1439040143162240889/original/dbcab396-5bf5-4553-9f60-fe677e3f6b15.jpeg?im_w=720"}, {"id": "1608596514278884961", "type": "Apartment in Talat Yai", "name": "Modern studio with a pool-view balcony, a full kitchen, and free parking", "beds": "1 bedroom · 2 beds · 1 bath", "rating": "5.0", "reviews": 15, "total": 102, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1608596514278884961/original/a9601d28-741e-4cf1-881a-0f39c0cc313d.jpeg?im_w=720"}, {"id": "21833723", "type": "Apartment in Tambon Talat Yai", "name": "12th-floor Chino-Portuguese design with a rooftop pool and a private balcony", "beds": "1 bedroom · 1 bed · 1.5 baths", "rating": "4.75", "reviews": 119, "total": 122, "top": 0, "img": "https://a0.muscache.com/im/pictures/3fa03239-b0ba-4e20-b30a-e41db0efc757.jpg?im_w=720"}], "Nai Yang": [{"id": "1483949877949124567", "type": "Home in Thep Krasattri", "name": "Coconut house with a private plunge pool, a tropical garden, and free parking", "beds": "1 bedroom · 2 beds · 1 bath", "rating": "5.0", "reviews": 67, "total": 134, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1483949877949124567/original/a00cbae4-246e-41ca-9064-5b325c04c623.jpeg?im_w=720"}, {"id": "29209812", "type": "Home in Sa Khu", "name": "Brand new home 5 min from Nai Yang Beach, with a terrace, a BBQ area, free parking", "beds": "2 bedrooms · 3 beds · 2 baths", "rating": "4.99", "reviews": 109, "total": 92, "top": 0, "img": "https://a0.muscache.com/im/pictures/miso/Hosting-29209812/original/8a712bfa-96e6-4fd5-910d-c89b63c2bb5b.jpeg?im_w=720"}, {"id": "1750715066972273449", "type": "Home in Sa Khu", "name": "Brand new home 2 min from the airport, with a terrace, a full kitchen, free parking", "beds": "2 bedrooms · 3 beds · 2 baths", "rating": "5.0", "reviews": 6, "total": 119, "top": 1, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1750715066972273449/original/00386867-cee9-4419-a533-bb2cdf8d5b01.png?im_w=720"}, {"id": "1482404317998525993", "type": "Guesthouse in Sa Khu", "name": "500m from Naiyang Beach, with a patio, beach access, and free Wi-Fi", "beds": "1 bedroom · 2 beds · 1 bath", "rating": "5.0", "reviews": 35, "total": 45, "top": 0, "img": "https://a0.muscache.com/im/pictures/hosting/Hosting-1482404317998525993/original/bfb3708a-eed0-432b-84c9-b7cf75c6a6b3.jpeg?im_w=720"}]};
 const PULLED = "Oct 23, 2026";
 const PICKS = {
@@ -266,267 +342,316 @@ function autoChips(x){
   if (x.reviews>=150 && out.length<3) out.unshift(x.reviews+" reviews");
   return out.slice(0,3);
 }
-
+const LOCAL = {han:"Hà Nội", sgn:"TP. Hồ Chí Minh", bkk:"กรุงเทพฯ", hkt:"ภูเก็ต"};
+const FLIGHTS = [
+  {d:"Sat May 29", from:"SFO", to:"HAN", via:"via LAX, NRT", t:"7:15 am → 10:35 pm", plus:"+1 day", air:"United · ANA"},
+  {d:"Thu Jun 3", from:"HAN", to:"SGN", t:"12:45 pm → 2:55 pm", air:"Vietjet VJ137"},
+  {d:"Sun Jun 6", from:"SGN", to:"BKK", t:"11:15 am → 12:45 pm", air:"Vietjet", flag:"Lands at Suvarnabhumi"},
+  {d:"Thu Jun 10", from:"DMK", to:"HKT", t:"12:30 pm → 1:55 pm", air:"AirAsia", flag:"Departs Don Mueang"},
+  {d:"Sun Jun 13", from:"HKT", to:"JFK", via:"via AUH", t:"3:20 am → 4:00 pm", air:"Etihad EY415 · EY3", flag:"Leave night of Jun 12"}
+];
+const IC = {
+  in:'<svg class="i" viewBox="0 0 24 24"><path d="M2 22h20"/><path d="M3.8 13.3 2 8.5l2.6-.7 2.6 2.4 4.4-1.2L8.3 2.6l3-.8 5.6 6.4 4-1.1a2 2 0 0 1 1 3.9L5.6 15.4z"/></svg>',
+  out:'<svg class="i" viewBox="0 0 24 24"><path d="M2 22h20"/><path d="M6.4 17.4 2 12.8l2.5-.9 3 1.5 4.3-1.6L7 6.5l2.9-1.1 6.3 5.6 3.8-1.4a2 2 0 0 1 1.4 3.8L8 18.4z"/></svg>',
+  car:'<svg class="i" viewBox="0 0 24 24"><path d="M5 17h14M6 17v2M18 17v2M4 13l2-5h12l2 5v4H4z"/><circle cx="8" cy="14" r="1"/><circle cx="16" cy="14" r="1"/></svg>',
+  warn:'<svg class="i" viewBox="0 0 24 24"><path d="M12 3 2 20h20z"/><path d="M12 9v5M12 17.5v.5"/></svg>',
+  plus:'<svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  check:'<svg class="i" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>',
+  ext:'<svg class="i" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>'
+};
 
 const fmtD = s => new Date(s+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
 const nights = (a,b) => Math.round((new Date(b)-new Date(a))/864e5);
 const el = (t,cls,txt) => {const e=document.createElement(t); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e;};
+const svgEl = html => {const d=document.createElement("span"); d.innerHTML=html; return d.firstChild;};
+const money = n => "$"+Math.round(n).toLocaleString();
 const store = {get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}}, set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const toastEl = document.getElementById("toast"); let toastT;
+function toast(m){ toastEl.textContent=m; toastEl.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>toastEl.classList.remove("show"),2200); }
 
 const prefs = Object.assign({max:"", entire:true, fav:true}, store.get("stayPrefs",{}));
-prefs.guests = 2;
-
 function airbnbUrl(h, leg){
   const p = new URLSearchParams();
-  p.set("query", h.q);
-  p.set("checkin", h.ci || leg.ci);
-  p.set("checkout", h.co || leg.co);
-  p.set("adults", String(prefs.guests));
+  p.set("query", h.q); p.set("checkin", h.ci || leg.ci); p.set("checkout", h.co || leg.co); p.set("adults","2");
   if (prefs.max) p.set("price_max", prefs.max);
   if (prefs.entire) p.append("room_types[]", "Entire home/apt");
   if (prefs.fav) p.set("guest_favorite", "true");
   return "https://www.airbnb.com/s/homes?" + p.toString();
 }
 
-// Route nav
-const nav = document.getElementById("routeNav");
-LEGS.forEach((leg,i)=>{
-  if(i) nav.appendChild(el("span","arrow","→"));
-  const a = el("a"); a.href = "#"+leg.id;
-  a.appendChild(el("span","code",leg.code));
-  a.appendChild(el("span","when", fmtD(leg.ci)+" – "+fmtD(leg.co)));
-  nav.appendChild(a);
+// Index listings per leg
+LEGS.forEach(leg=>{
+  leg.all = [];
+  leg.hoods.forEach(h=>(LISTINGS[h.name]||[]).forEach(x=>leg.all.push({x,h})));
+  leg.pickRows = (PICKS[leg.id]||[]).map(p=>{const m=leg.all.find(a=>a.x.id===p.id); return m && Object.assign({p},m);}).filter(Boolean);
+  const full = leg.pickRows.filter(r=>!r.h.ci).map(r=>r.x.total);
+  leg.lo = Math.min(...full); leg.hi = Math.max(...full);
 });
 
+// Top bar
+const stopsNav = document.getElementById("stops");
+const navLinks = {};
+[{id:"overview",label:"Overview"}].concat(LEGS).forEach(s=>{
+  const a = el("a"); a.href="#"+s.id; a.dataset.id=s.id;
+  if (s.cc){ a.className=s.cc; a.appendChild(el("span","code",s.code)); a.appendChild(el("span","nm",s.city)); }
+  else a.textContent = s.label;
+  stopsNav.appendChild(a); navLinks[s.id]=a;
+});
+
+// Hero route
+const route = document.getElementById("route");
+LEGS.forEach((leg,i)=>{
+  const a = el("a","stopcard "+leg.cc); a.href="#"+leg.id;
+  const r = el("div","row"); r.appendChild(el("i","pin")); r.appendChild(el("span","num","0"+(i+1)+" · "+leg.code)); a.appendChild(r);
+  a.appendChild(el("h3",null,leg.city));
+  a.appendChild(el("div","when",fmtD(leg.ci)+" – "+fmtD(leg.co)+" · "+nights(leg.ci,leg.co)+" nights"));
+  const rg = el("div","range"); rg.appendChild(el("span",null,"Picks from ")); rg.appendChild(el("b",null,money(leg.lo)+"–"+money(leg.hi)));
+  a.appendChild(rg);
+  route.appendChild(a);
+});
+const lo = LEGS.reduce((s,l)=>s+l.lo,0), hi = LEGS.reduce((s,l)=>s+l.hi,0);
+const stats = document.getElementById("stats");
+[[ "14","nights"],["4","stops · 2 countries"],["5","flights"],[money(lo)+"–"+money(hi),"lodging for 2, using our picks"],[money(lo/2)+"–"+money(hi/2),"per person"]].forEach(([b,s])=>{
+  const d=el("div","stat"); d.appendChild(el("b",null,b)); d.appendChild(el("span",null,s)); stats.appendChild(d);
+});
+
+// Flights
+const fr = document.getElementById("flightRows");
+FLIGHTS.forEach(f=>{
+  const tr = el("tr");
+  tr.appendChild(el("td",null,f.d));
+  const r = el("td"); r.appendChild(el("span","rt",f.from+" → "+f.to)); if(f.via){r.appendChild(el("div","via",f.via));} tr.appendChild(r);
+  const t = el("td"); t.appendChild(document.createTextNode(f.t)); if(f.plus){t.appendChild(el("span","flag",f.plus));} if(f.flag){t.appendChild(el("div","via",f.flag));} tr.appendChild(t);
+  tr.appendChild(el("td",null,f.air));
+  fr.appendChild(tr);
+});
+
+// Cards
+function stayCard(leg, r, opts){
+  const {x,h,p} = r; const ci=h.ci||leg.ci, co=h.co||leg.co, n=nights(ci,co);
+  const url = "https://www.airbnb.com/rooms/"+x.id+"?check_in="+ci+"&check_out="+co+"&adults=2";
+  const c = el("article","stay "+leg.cc+(p?" is-pick":""));
+  const ph = el("a","ph"); ph.href=url; ph.target="_blank"; ph.rel="noopener"; ph.setAttribute("aria-label","Open "+x.name+" on Airbnb");
+  ph.appendChild(el("span","ph-t",x.type));
+  const im = new Image(); im.alt=""; im.loading="lazy"; im.referrerPolicy="no-referrer"; im.src=x.img; im.onerror=()=>im.remove(); ph.appendChild(im);
+  ph.appendChild(el("span","badge"+(p?" lbl":""), p ? p.label : (x.top?"Top guest favorite":"Guest favorite")));
+  if (opts && opts.ix) ph.appendChild(el("span","ix",opts.ix));
+  c.appendChild(ph);
+  const info = el("div","info");
+  const r1 = el("div","row1"); r1.appendChild(el("span",null,h.name+(h.ci?" · Jun 12 only":""))); r1.appendChild(el("span","stars","★ "+x.rating+" · "+x.reviews.toLocaleString())); info.appendChild(r1);
+  info.appendChild(el("div","nm",x.name));
+  if (p) info.appendChild(el("p","why",p.why));
+  const chips = el("div","chips"); (p?p.chips:autoChips(x)).forEach(t=>chips.appendChild(el("span","chip",t))); if(chips.children.length) info.appendChild(chips);
+  info.appendChild(el("div","bd",x.beds));
+  const foot = el("div","foot");
+  const pr = el("div","price"); pr.appendChild(el("b",null,money(x.total))); pr.appendChild(el("span",null,"~"+money(x.total/n)+"/night · "+n+(n>1?" nights":" night"))); foot.appendChild(pr);
+  const acts = el("div","acts");
+  const add = el("button","btn ghost icon"); add.type="button"; add.dataset.lid=x.id; add.dataset.seg=leg.id;
+  add.onclick = ()=>quickAdd(leg, x, url, n, add);
+  acts.appendChild(add);
+  const v = el("a","btn"); v.href=url; v.target="_blank"; v.rel="noopener"; v.textContent="View"; v.appendChild(svgEl(IC.ext)); acts.appendChild(v);
+  foot.appendChild(acts); info.appendChild(foot); c.appendChild(info);
+  return c;
+}
+function syncAddButtons(){
+  document.querySelectorAll("button[data-lid]").forEach(b=>{
+    const on = picks.some(p=>p.seg===b.dataset.seg && p.lid===b.dataset.lid);
+    b.classList.toggle("on",on); b.innerHTML = on?IC.check:IC.plus;
+    b.setAttribute("aria-label", on?"On shortlist":"Add to shortlist"); b.title = on?"On shortlist":"Add to shortlist";
+  });
+}
+
 // Legs
-const main = document.getElementById("legs");
-const linkEls = [];
-const listEls = {};
-LEGS.forEach(leg=>{
-  const s = el("section","leg"); s.id = leg.id;
+const legsEl = document.getElementById("legs");
+const linkEls = [], listEls = {}, tabCounts = {};
+const tabState = store.get("tabs",{});
+LEGS.forEach((leg,i)=>{
+  const s = el("section","leg "+leg.cc); s.id=leg.id; s.setAttribute("aria-labelledby",leg.id+"-h");
   const head = el("div","leg-head");
-  head.appendChild(el("h2",null,leg.city));
-  head.appendChild(el("span","flag "+leg.cc,leg.country.toUpperCase()));
-  const d = el("span","dates");
-  d.innerHTML = "<b></b> · ";
-  d.querySelector("b").textContent = fmtD(leg.ci)+" → "+fmtD(leg.co);
-  d.appendChild(document.createTextNode(nights(leg.ci,leg.co)+" nights"));
-  head.appendChild(d);
+  const l = el("div");
+  const eb = el("div","eyebrow"); eb.appendChild(el("i")); eb.appendChild(document.createTextNode("Stop "+(i+1)+" of 4 · "+leg.country)); l.appendChild(eb);
+  const h2 = el("h2",null,leg.city); h2.id=leg.id+"-h"; h2.appendChild(el("small",null,LOCAL[leg.id])); l.appendChild(h2);
+  head.appendChild(l);
+  const d = el("div","dates"); d.appendChild(el("b",null,fmtD(leg.ci)+" → "+fmtD(leg.co))); d.appendChild(el("span",null,nights(leg.ci,leg.co)+" nights · picks "+money(leg.lo)+"–"+money(leg.hi))); head.appendChild(d);
   s.appendChild(head);
 
   const logi = el("div","logi");
-  [["Arrive",leg.arrive],["Leave",leg.leave]].forEach(([lab,f])=>{
-    const c = el("div"); c.appendChild(el("div","label",lab));
-    c.appendChild(el("div",null,f.time)); c.appendChild(el("div","flight",f.flight)); logi.appendChild(c);
+  [[IC.in,"Arrive",leg.arrive.time,leg.arrive.flight],[IC.out,"Leave",leg.leave.time,leg.leave.flight],[IC.car,"Getting around",null,leg.transfer]].forEach(([ic,k,v,sub])=>{
+    const c = el("div"); c.appendChild(svgEl(ic)); const t = el("div"); t.appendChild(el("div","k",k)); if(v) t.appendChild(el("div","v",v)); t.appendChild(el("div","s",sub)); c.appendChild(t); logi.appendChild(c);
   });
-  const t = el("div"); t.appendChild(el("div","label","Getting there")); t.appendChild(el("div",null,leg.transfer)); logi.appendChild(t);
   s.appendChild(logi);
-  if (leg.note) s.appendChild(el("div","note",leg.note));
+  if (leg.note){ const n=el("div","callout"); n.appendChild(svgEl(IC.warn)); n.appendChild(el("div",null,leg.note)); s.appendChild(n); }
 
-  const hoods = el("div","hoods");
+  // Tabs
+  const tabs = el("div","tabs"); tabs.setAttribute("role","tablist"); tabs.setAttribute("aria-label",leg.city+" views");
+  const defs = [["picks","Our picks",leg.pickRows.length],["hoods","Neighborhoods",leg.hoods.length],["all","All stays",leg.all.length],["short","Shortlist",0]];
+  const panels = {};
+  defs.forEach(([k,label,count])=>{
+    const b = el("button"); b.type="button"; b.setAttribute("role","tab"); b.id=leg.id+"-tab-"+k; b.setAttribute("aria-controls",leg.id+"-p-"+k);
+    b.appendChild(document.createTextNode(label)); const n=el("span","n",String(count)); b.appendChild(n);
+    if (k==="short") tabCounts[leg.id]=n;
+    b.onclick = ()=>select(k,true);
+    b.onkeydown = e=>{ if(e.key==="ArrowRight"||e.key==="ArrowLeft"){ const ks=defs.map(d=>d[0]); const j=(ks.indexOf(k)+(e.key==="ArrowRight"?1:-1)+ks.length)%ks.length; select(ks[j],true); tabs.children[j].focus(); } };
+    tabs.appendChild(b);
+    const p = el("div","panel"); p.id=leg.id+"-p-"+k; p.setAttribute("role","tabpanel"); p.setAttribute("aria-labelledby",b.id); p.hidden=true;
+    panels[k]=p;
+  });
+  function select(k,save){
+    [...tabs.children].forEach(b=>{ const on=b.id.endsWith("-"+k); b.setAttribute("aria-selected",on); b.tabIndex=on?0:-1; });
+    Object.entries(panels).forEach(([kk,p])=>p.hidden=kk!==k);
+    if (save){ tabState[leg.id]=k; store.set("tabs",tabState); }
+  }
+  s.appendChild(tabs);
+
+  // Picks panel
+  const pi = el("div","panel-intro"); pi.appendChild(el("p",null,"Three stays chosen for this stop. Tap + to add one to the shortlist."));
+  const allBtn = el("button","btn ghost small","See all "+leg.all.length+" stays"); allBtn.type="button"; allBtn.onclick=()=>select("all",true); pi.appendChild(allBtn);
+  panels.picks.appendChild(pi);
+  const g3 = el("div","grid3"); leg.pickRows.forEach(r=>g3.appendChild(stayCard(leg,r))); panels.picks.appendChild(g3);
+
+  // Neighborhoods panel
+  const tb = el("div","toolbar");
+  tb.innerHTML = `<label for="max-${leg.id}">Max per night <select id="max-${leg.id}" data-pref="max"><option value="">Any</option><option value="40">$40</option><option value="60">$60</option><option value="80">$80</option><option value="120">$120</option><option value="180">$180</option><option value="250">$250</option></select></label>
+    <label for="ent-${leg.id}"><input type="checkbox" id="ent-${leg.id}" data-pref="entire"> Entire place</label>
+    <label for="fav-${leg.id}"><input type="checkbox" id="fav-${leg.id}" data-pref="fav"> Guest favorites only</label>`;
+  panels.hoods.appendChild(tb);
+  const g4 = el("div","grid4");
   leg.hoods.forEach(h=>{
     const c = el("article","hood");
-    c.appendChild(el("h3",null,h.name));
+    const t = el("h3",null,h.name); if (h.pick) t.appendChild(el("span","tag-pick","Recommended")); c.appendChild(t);
     c.appendChild(el("div","local",h.local));
     c.appendChild(el("p",null,h.text));
-    const tags = el("div","tags");
-    if (h.pick) tags.appendChild(el("span","tag pick","Our pick"));
-    h.tags.forEach(x=>tags.appendChild(el("span","tag",x)));
-    c.appendChild(tags);
-    const go = el("div","go");
-    const a = el("a","btn"); a.target="_blank"; a.rel="noopener";
-    a.textContent = h.ci ? "Guest favorites · "+fmtD(h.ci)+"–"+fmtD(h.co) : "See guest favorites";
+    const ch = el("div","chips"); h.tags.forEach(x=>ch.appendChild(el("span","chip",x))); c.appendChild(ch);
+    const go = el("div","go"); const a = el("a","btn ghost small"); a.target="_blank"; a.rel="noopener";
+    a.textContent = h.ci ? "Search "+fmtD(h.ci)+"–"+fmtD(h.co) : "Search on Airbnb"; a.appendChild(svgEl(IC.ext));
     linkEls.push([a,h,leg]); go.appendChild(a); c.appendChild(go);
-    hoods.appendChild(c);
+    g4.appendChild(c);
   });
-  s.appendChild(hoods);
+  panels.hoods.appendChild(g4);
 
-  // Guest favorites pulled from Airbnb
-  const hoodOf = {}; leg.hoods.forEach(h=>(LISTINGS[h.name]||[]).forEach(x=>hoodOf[x.id]={h,x}));
-  const card = (x,h,pick)=>{
-    const ci = h.ci||leg.ci, co = h.co||leg.co, n = nights(ci,co);
-    const url = "https://www.airbnb.com/rooms/"+x.id+"?check_in="+ci+"&check_out="+co+"&adults=2";
-    const c = el("article","stay"+(pick?" pick-card":""));
-    const ph = el("a","ph"); ph.href=url; ph.target="_blank"; ph.rel="noopener"; ph.setAttribute("aria-label",x.name);
-    ph.appendChild(el("span",null,x.type));
-    const im = new Image(); im.alt=""; im.loading="lazy"; im.referrerPolicy="no-referrer"; im.src=x.img; im.onerror=()=>im.remove(); ph.appendChild(im);
-    ph.appendChild(el("span","badge"+(pick?" lbl":""), pick ? pick.label : (x.top?"Top guest favorite":"Guest favorite")));
-    c.appendChild(ph);
-    const info = el("div","info");
-    const r1 = el("div","row1"); r1.appendChild(el("span","type",h.name+(pick&&h.ci?" · last night":""))); r1.appendChild(el("span","stars","★ "+x.rating+" ("+x.reviews.toLocaleString()+")"));
-    info.appendChild(r1);
-    info.appendChild(el("div","nm",x.name));
-    if (pick) info.appendChild(el("p","why",pick.why));
-    const chips = el("div","chips");
-    (pick ? pick.chips : autoChips(x)).forEach(t=>chips.appendChild(el("span","chip",t)));
-    info.appendChild(chips);
-    info.appendChild(el("div","bd",x.beds));
-    const pr = el("div","pr"); pr.appendChild(el("b",null,"$"+x.total.toLocaleString()));
-    pr.appendChild(el("span",null," total · ~$"+Math.round(x.total/n)+"/night · "+n+(n>1?" nights":" night")));
-    info.appendChild(pr);
-    const acts = el("div","acts");
-    const v = el("a","btn small"); v.href=url; v.target="_blank"; v.rel="noopener"; v.textContent="View on Airbnb"; acts.appendChild(v);
-    const add = el("button","btn ghost small","Shortlist"); add.type="button";
-    add.onclick = ()=>quickAdd(leg, x, url, n, add);
-    acts.appendChild(add);
-    info.appendChild(acts); c.appendChild(info);
-    return c;
-  };
-  const favs = el("div","favs");
-  favs.appendChild(el("h3",null,"Our picks in "+leg.city));
-  favs.appendChild(el("div","sub","From your Airbnb wishlist. Totals for 2 before taxes, as of "+PULLED+"."));
-  const pg = el("div","pick-grid");
-  const picked = new Set();
-  (PICKS[leg.id]||[]).forEach(p=>{ const m=hoodOf[p.id]; if(!m) return; picked.add(p.id); pg.appendChild(card(m.x,m.h,p)); });
-  favs.appendChild(pg);
-  const rest = Object.values(hoodOf).filter(m=>!picked.has(m.x.id));
-  if (rest.length){
-    const det = el("details","more");
-    det.appendChild(el("summary",null,"Show "+rest.length+" more guest favorites in "+leg.city));
-    leg.hoods.forEach(h=>{
-      const list = rest.filter(m=>m.h===h); if(!list.length) return;
-      const row = el("div","fav-row"); row.appendChild(el("h4",null,h.name));
-      const grid = el("div","fav-grid"); list.forEach(m=>grid.appendChild(card(m.x,h,null)));
-      row.appendChild(grid); det.appendChild(row);
-    });
-    favs.appendChild(det);
-  }
-  s.appendChild(favs);
+  // All stays panel
+  const ai = el("div","panel-intro"); ai.appendChild(el("p",null,"Every Guest Favorite saved to your wishlist for this stop, by neighborhood.")); panels.all.appendChild(ai);
+  leg.hoods.forEach(h=>{
+    const rows = leg.all.filter(r=>r.h===h); if(!rows.length) return;
+    const grp = el("div","group"); const h4 = el("h4",null,h.name); h4.appendChild(el("span",null,rows.length+" stays")); grp.appendChild(h4);
+    const g = el("div","grid4");
+    rows.forEach(r=>{ const pk = leg.pickRows.find(q=>q.x.id===r.x.id); g.appendChild(stayCard(leg, pk||r)); });
+    grp.appendChild(g); panels.all.appendChild(grp);
+  });
 
-  // Shortlist
-  const sl = el("div","shortlist");
-  const sh = el("div","sl-head");
-  sh.appendChild(el("h3",null,leg.city+" shortlist"));
-  const addBtn = el("button","btn ghost small","+ Add a listing"); addBtn.type="button";
-  sh.appendChild(addBtn); sl.appendChild(sh);
-  const form = el("form","add"); form.id = "form-"+leg.id;
-  form.innerHTML = `
-    <input class="full" id="url-${leg.id}" type="url" placeholder="Paste Airbnb link" required>
-    <input id="title-${leg.id}" type="text" placeholder="Name (e.g. Loft by the lake)">
+  // Shortlist panel
+  const si = el("div","panel-intro"); si.appendChild(el("p",null,"Vote on what you like. Mark one booked once it's confirmed."));
+  const addBtn = el("button","btn ghost small"); addBtn.type="button"; addBtn.appendChild(svgEl(IC.plus)); addBtn.appendChild(document.createTextNode("Paste a listing")); si.appendChild(addBtn);
+  panels.short.appendChild(si);
+  const form = el("form","add"); form.id="form-"+leg.id;
+  form.innerHTML = `<input class="full" id="url-${leg.id}" type="url" placeholder="Paste an Airbnb link" required>
+    <input id="title-${leg.id}" type="text" placeholder="Name">
     <input id="price-${leg.id}" type="number" min="0" step="1" placeholder="$ per night">
-    <textarea class="full" id="notes-${leg.id}" rows="2" placeholder="Why it's good, beds, check-in…"></textarea>
+    <textarea class="full" id="notes-${leg.id}" rows="2" placeholder="Notes: beds, check-in, why it's good"></textarea>
     <div class="row full"><span class="status" id="status-${leg.id}"></span><button type="button" class="btn ghost small" data-cancel>Cancel</button><button class="btn small">Add</button></div>`;
-  sl.appendChild(form);
-  addBtn.onclick = ()=>{form.classList.toggle("open"); if(form.classList.contains("open")) form.querySelector("input").focus();};
-  form.querySelector("[data-cancel]").onclick = ()=>{form.reset(); form.classList.remove("open");};
-  form.addEventListener("submit", e=>{e.preventDefault(); addPick(leg.id, form);});
-  const list = el("div","picks"); sl.appendChild(list);
-  listEls[leg.id] = list;
-  s.appendChild(sl);
-  main.appendChild(s);
+  addBtn.onclick = ()=>{ form.classList.toggle("open"); if(form.classList.contains("open")) form.querySelector("input").focus(); };
+  form.querySelector("[data-cancel]").onclick = ()=>{ form.reset(); form.classList.remove("open"); };
+  form.addEventListener("submit", e=>{ e.preventDefault(); addPick(leg.id, form); });
+  panels.short.appendChild(form);
+  const list = el("div","picks"); panels.short.appendChild(list); listEls[leg.id]=list;
+
+  Object.values(panels).forEach(p=>s.appendChild(p));
+  select(tabState[leg.id]||"picks",false);
+  leg.select = select;
+  legsEl.appendChild(s);
 });
 
-function refreshLinks(){ linkEls.forEach(([a,h,leg])=>a.href = airbnbUrl(h,leg)); }
+// Search prefs (shared across stops)
+function refreshLinks(){ linkEls.forEach(([a,h,leg])=>a.href=airbnbUrl(h,leg)); }
+function syncPrefInputs(){ document.querySelectorAll("[data-pref]").forEach(i=>{ if(i.type==="checkbox") i.checked=!!prefs[i.dataset.pref]; else i.value=prefs[i.dataset.pref]; }); }
+document.addEventListener("change", e=>{ const i=e.target; if(!i.dataset||!i.dataset.pref) return; prefs[i.dataset.pref] = i.type==="checkbox"?i.checked:i.value; store.set("stayPrefs",prefs); syncPrefInputs(); refreshLinks(); });
+syncPrefInputs(); refreshLinks();
 
-// Controls
-const maxSel = document.getElementById("maxPrice");
-const entire = document.getElementById("entire");
-const fav = document.getElementById("fav");
-fav.checked = prefs.fav; maxSel.value = prefs.max; entire.checked = prefs.entire;
-function savePrefs(){ store.set("stayPrefs",prefs); refreshLinks(); }
-fav.onchange = ()=>{ prefs.fav=fav.checked; savePrefs(); };
-maxSel.onchange = ()=>{ prefs.max=maxSel.value; savePrefs(); };
-entire.onchange = ()=>{ prefs.entire=entire.checked; savePrefs(); };
-refreshLinks();
+// Scrollspy
+const spy = new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ Object.values(navLinks).forEach(a=>a.removeAttribute("aria-current")); const a=navLinks[e.target.id]; if(a){ a.setAttribute("aria-current","true"); a.scrollIntoView({block:"nearest",inline:"nearest"}); } } });
+},{rootMargin:"-45% 0px -50% 0px"});
+["overview"].concat(LEGS.map(l=>l.id)).forEach(id=>spy.observe(document.getElementById(id)));
+navLinks.overview.setAttribute("aria-current","true");
 
 // Shortlist data: shared db when available, otherwise this browser only
 let db=null, me=null, userNs=null, picks=[], shared=false;
 function localPicks(){ return store.get("localPicks",[]); }
 function saveLocal(){ store.set("localPicks", picks.filter(p=>p._local)); }
-
 function voteCount(p){ return Object.values(p.votes||{}).filter(Boolean).length; }
+function safeUrl(u){ try{ const x=new URL(u); return /^https?:$/.test(x.protocol)?x.href:"#"; }catch(e){ return "#"; } }
 
 async function render(){
   const ids = [...new Set(picks.map(p=>p.by).filter(Boolean))];
   let profiles = {};
   if (userNs && ids.length) { try { profiles = await userNs.profiles(ids); } catch(e){} }
+  document.getElementById("slTotal").textContent = picks.length;
   LEGS.forEach(leg=>{
     const list = listEls[leg.id]; list.replaceChildren();
     const mine = picks.filter(p=>p.seg===leg.id).sort((a,b)=>(b.booked-a.booked)||(voteCount(b)-voteCount(a))||(a.at-b.at));
-    if (!mine.length){ list.appendChild(el("p","empty","No listings yet. Open a neighborhood search above, then paste the ones you like here.")); return; }
+    tabCounts[leg.id].textContent = mine.length;
+    if (!mine.length){ list.appendChild(el("div","empty","Nothing here yet. Tap + on any stay, or paste an Airbnb link.")); return; }
     mine.forEach(p=>{
       const row = el("div","pick"+(p.booked?" booked":""));
-      const v = el("button","vote"+(me && p.votes && p.votes[me]?" on":"")); v.type="button";
-      v.setAttribute("aria-label","Vote for this listing");
-      v.appendChild(el("span",null,"▲")); v.appendChild(el("span",null,String(voteCount(p))));
-      v.onclick = ()=>toggleVote(p);
-      row.appendChild(v);
+      const v = el("button","vote"+((p.votes && p.votes[me||"me"])?" on":"")); v.type="button"; v.setAttribute("aria-label","Vote for this listing");
+      v.appendChild(el("span",null,"▲")); v.appendChild(el("span",null,String(voteCount(p)))); v.onclick=()=>toggleVote(p); row.appendChild(v);
       const b = el("div","body");
-      const tl = el("a","ttl"); tl.href = safeUrl(p.url); tl.target="_blank"; tl.rel="noopener"; tl.textContent = p.title || "Airbnb listing";
-      b.appendChild(tl);
-      const metaBits = [];
-      if (p.price) metaBits.push("$"+p.price+"/night · ~$"+(p.price*nights(leg.ci,leg.co))+" total");
-      if (p.by && profiles[p.by] && profiles[p.by].name) metaBits.push("added by "+profiles[p.by].name);
-      if (p.booked) metaBits.push("Booked");
-      if (metaBits.length) b.appendChild(el("div","meta",metaBits.join(" · ")));
+      const tl = el("a","ttl"); tl.href=safeUrl(p.url); tl.target="_blank"; tl.rel="noopener"; tl.textContent=p.title||"Airbnb listing"; b.appendChild(tl);
+      const bits=[]; if(p.price) bits.push("~$"+p.price+"/night · ~"+money(p.price*nights(leg.ci,leg.co))+" for the stay");
+      if (p.by && profiles[p.by] && profiles[p.by].name) bits.push("added by "+profiles[p.by].name);
+      if (p.booked) bits.push("Booked");
+      if (bits.length) b.appendChild(el("div","meta",bits.join(" · ")));
       if (p.notes) b.appendChild(el("div","notes",p.notes));
       row.appendChild(b);
-      const acts = el("div","acts");
+      const pa = el("div","pa");
       const bk = el("button","linkbtn",p.booked?"Unmark booked":"Mark booked"); bk.type="button"; bk.onclick=()=>patch(p,{booked:!p.booked});
       const rm = el("button","linkbtn","Remove"); rm.type="button";
-      rm.onclick = ()=>{ if (rm.dataset.armed){ removePick(p); } else { rm.dataset.armed="1"; rm.textContent="Tap again to remove"; setTimeout(()=>{delete rm.dataset.armed; rm.textContent="Remove";},3000);} };
-      acts.appendChild(bk); acts.appendChild(rm); row.appendChild(acts);
+      rm.onclick=()=>{ if(rm.dataset.armed){ removePick(p); } else { rm.dataset.armed="1"; rm.textContent="Tap again to remove"; setTimeout(()=>{delete rm.dataset.armed; rm.textContent="Remove";},3000);} };
+      pa.appendChild(bk); pa.appendChild(rm); row.appendChild(pa);
       list.appendChild(row);
     });
   });
+  syncAddButtons();
 }
-function safeUrl(u){ try{ const x=new URL(u); return /^https?:$/.test(x.protocol)?x.href:"#"; }catch(e){ return "#"; } }
-
 async function addPick(seg, form){
-  const url = form.querySelector(`#url-${seg}`).value.trim();
-  const title = form.querySelector(`#title-${seg}`).value.trim();
-  const price = parseInt(form.querySelector(`#price-${seg}`).value,10) || 0;
-  const notes = form.querySelector(`#notes-${seg}`).value.trim();
-  const status = form.querySelector(`#status-${seg}`);
-  if (safeUrl(url)==="#"){ status.textContent="That link doesn't look right. Paste the full https:// address."; return; }
-  const doc = {seg, url, title: title.slice(0,120), price, notes: notes.slice(0,500), booked:false, at:Date.now(), votes:{}, by: me||null};
-  if (me) doc.votes[me] = true;
-  if (shared){
-    status.textContent = "Saving…";
-    try { await db.collection("picks").add(doc); status.textContent=""; form.reset(); form.classList.remove("open"); }
-    catch(e){ status.textContent = e && e.code==="permission_denied" ? "You can view this list but not add to it. Ask the owner for edit access." : "Couldn't save. Try again."; }
-  } else {
-    doc._local = true; doc._id = "l"+Date.now(); picks.push(doc); saveLocal(); form.reset(); form.classList.remove("open"); render();
-  }
+  const url=form.querySelector(`#url-${seg}`).value.trim(), title=form.querySelector(`#title-${seg}`).value.trim();
+  const price=parseInt(form.querySelector(`#price-${seg}`).value,10)||0, notes=form.querySelector(`#notes-${seg}`).value.trim();
+  const status=form.querySelector(`#status-${seg}`);
+  if (safeUrl(url)==="#"){ status.textContent="Paste the full https:// link."; return; }
+  const doc={seg,url,title:title.slice(0,120),price,notes:notes.slice(0,500),booked:false,at:Date.now(),votes:{},by:me||null};
+  doc.votes[me||"me"]=true;
+  if (shared){ status.textContent="Saving…"; try{ await db.collection("picks").add(doc); status.textContent=""; form.reset(); form.classList.remove("open"); toast("Added to shortlist"); }catch(e){ status.textContent = e&&e.code==="permission_denied"?"You can view this list but not add to it.":"Couldn't save. Try again."; } }
+  else { doc._local=true; doc._id="l"+Date.now(); picks.push(doc); saveLocal(); form.reset(); form.classList.remove("open"); render(); toast("Added to shortlist"); }
 }
 async function quickAdd(leg, x, url, n, btn){
-  if (picks.some(p=>p.seg===leg.id && p.lid===x.id)){ btn.textContent="On shortlist"; return; }
-  const doc = {seg:leg.id, lid:x.id, url, title:x.name.slice(0,120), price:Math.round(x.total/n), notes:x.beds+" · ★ "+x.rating, booked:false, at:Date.now(), votes:{}, by:me||null};
-  if (me) doc.votes[me]=true;
-  btn.textContent="Adding…";
-  if (shared){ try{ await db.collection("picks").add(doc); btn.textContent="On shortlist"; }catch(e){ btn.textContent = e&&e.code==="permission_denied"?"View only":"Try again"; } }
-  else { doc._local=true; doc._id="l"+Date.now(); picks.push(doc); saveLocal(); render(); btn.textContent="On shortlist"; }
+  const existing = picks.find(p=>p.seg===leg.id && p.lid===x.id);
+  if (existing){ await removePick(existing); toast("Removed from "+leg.city+" shortlist"); return; }
+  const doc={seg:leg.id,lid:x.id,url,title:x.name.slice(0,120),price:Math.round(x.total/n),notes:x.beds+" · ★ "+x.rating,booked:false,at:Date.now(),votes:{},by:me||null};
+  doc.votes[me||"me"]=true;
+  if (shared){ try{ await db.collection("picks").add(doc); toast("Added to "+leg.city+" shortlist"); }catch(e){ toast(e&&e.code==="permission_denied"?"View only: you can't add here":"Couldn't save. Try again."); } }
+  else { doc._local=true; doc._id="l"+Date.now(); picks.push(doc); saveLocal(); render(); toast("Added to "+leg.city+" shortlist"); }
 }
 async function patch(p, data){
-  if (shared && p._id && !p._local){ try{ await db.collection("picks").doc(p._id).update(data);}catch(e){} }
+  if (shared && p._id && !p._local){ try{ await db.collection("picks").doc(p._id).update(data);}catch(e){ toast("Couldn't save. Try again."); } }
   else { Object.assign(p,data); saveLocal(); render(); }
 }
-function toggleVote(p){
-  const key = me || "me";
-  const on = !(p.votes && p.votes[key]);
-  if (shared && !p._local) patch(p,{votes:{[key]:on}});
-  else { p.votes = Object.assign({},p.votes,{[key]:on}); saveLocal(); render(); }
-}
+function toggleVote(p){ const key=me||"me"; const on=!(p.votes&&p.votes[key]);
+  if (shared && !p._local) patch(p,{votes:{[key]:on}}); else { p.votes=Object.assign({},p.votes,{[key]:on}); saveLocal(); render(); } }
 async function removePick(p){
-  if (shared && !p._local){ try{ await db.collection("picks").doc(p._id).delete(); }catch(e){} }
-  else { picks = picks.filter(x=>x!==p); saveLocal(); render(); }
+  if (shared && !p._local){ try{ await db.collection("picks").doc(p._id).delete(); }catch(e){ toast("Couldn't remove. Try again."); } }
+  else { picks=picks.filter(x=>x!==p); saveLocal(); render(); }
 }
 
 picks = localPicks(); render();
-
 (async ()=>{
   if (!window.claude || !window.claude.use) return;
   try {
     const [d,u] = await Promise.all([claude.use("db"), claude.use("user")]);
-    userNs = u;
-    if (u){ try { me = await u.id(); } catch(e){} }
+    userNs = u; if (u){ try { me = await u.id(); } catch(e){} }
     if (!d) return;
     db = d; shared = true;
     document.getElementById("saveNote").textContent = "Shortlists are shared with everyone who can open this page.";
-    db.collection("picks").onSnapshot(snap=>{
-      picks = snap.docs.map(s=>Object.assign({_id:s.id}, s.data()));
-      render();
-    }, ()=>{});
+    db.collection("picks").onSnapshot(snap=>{ picks = snap.docs.map(s=>Object.assign({_id:s.id}, s.data())); render(); }, ()=>{});
   } catch(e){}
 })();
 </script>
