@@ -121,9 +121,7 @@ footer{padding-block:40px 48px;color:var(--muted);font-size:13px}
   <h1>Vietnam &amp; Thailand Stays</h1>
   <p>Pick a neighborhood in each city and open Airbnb with your dates already set. Paste listings you like into that city's shortlist so everyone can vote.</p>
   <div class="controls">
-    <div class="ctl"><span class="label">Guests</span>
-      <div class="step"><button id="gMinus" aria-label="Fewer guests">−</button><span id="gCount">2</span><button id="gPlus" aria-label="More guests">+</button></div>
-    </div>
+    <div class="ctl"><span class="label">Guests</span><b>2 adults</b></div>
     <label class="ctl" for="maxPrice"><span class="label">Max / night</span>
       <select id="maxPrice">
         <option value="">Any</option><option value="40">$40</option><option value="60">$60</option><option value="80">$80</option>
@@ -131,6 +129,7 @@ footer{padding-block:40px 48px;color:var(--muted);font-size:13px}
       </select>
     </label>
     <label class="toggle" for="entire"><input type="checkbox" id="entire" checked> Entire place only</label>
+    <label class="toggle" for="fav"><input type="checkbox" id="fav" checked> Guest favorites only</label>
   </div>
 </header>
 
@@ -206,7 +205,8 @@ const nights = (a,b) => Math.round((new Date(b)-new Date(a))/864e5);
 const el = (t,cls,txt) => {const e=document.createElement(t); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e;};
 const store = {get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}}, set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
-const prefs = Object.assign({guests:2, max:"", entire:true}, store.get("stayPrefs",{}));
+const prefs = Object.assign({max:"", entire:true, fav:true}, store.get("stayPrefs",{}));
+prefs.guests = 2;
 
 function airbnbUrl(h, leg){
   const p = new URLSearchParams();
@@ -216,6 +216,7 @@ function airbnbUrl(h, leg){
   p.set("adults", String(prefs.guests));
   if (prefs.max) p.set("price_max", prefs.max);
   if (prefs.entire) p.append("room_types[]", "Entire home/apt");
+  if (prefs.fav) p.set("guest_favorite", "true");
   return "https://www.airbnb.com/s/homes?" + p.toString();
 }
 
@@ -266,7 +267,7 @@ LEGS.forEach(leg=>{
     c.appendChild(tags);
     const go = el("div","go");
     const a = el("a","btn"); a.target="_blank"; a.rel="noopener";
-    a.textContent = h.ci ? "Search Airbnb · "+fmtD(h.ci)+"–"+fmtD(h.co) : "Search Airbnb";
+    a.textContent = h.ci ? "Guest favorites · "+fmtD(h.ci)+"–"+fmtD(h.co) : "See guest favorites";
     linkEls.push([a,h,leg]); go.appendChild(a); c.appendChild(go);
     hoods.appendChild(c);
   });
@@ -298,13 +299,12 @@ LEGS.forEach(leg=>{
 function refreshLinks(){ linkEls.forEach(([a,h,leg])=>a.href = airbnbUrl(h,leg)); }
 
 // Controls
-const gCount = document.getElementById("gCount");
 const maxSel = document.getElementById("maxPrice");
 const entire = document.getElementById("entire");
-gCount.textContent = prefs.guests; maxSel.value = prefs.max; entire.checked = prefs.entire;
-function savePrefs(){ store.set("stayPrefs",prefs); gCount.textContent=prefs.guests; refreshLinks(); }
-document.getElementById("gMinus").onclick = ()=>{ prefs.guests=Math.max(1,prefs.guests-1); savePrefs(); };
-document.getElementById("gPlus").onclick = ()=>{ prefs.guests=Math.min(16,prefs.guests+1); savePrefs(); };
+const fav = document.getElementById("fav");
+fav.checked = prefs.fav; maxSel.value = prefs.max; entire.checked = prefs.entire;
+function savePrefs(){ store.set("stayPrefs",prefs); refreshLinks(); }
+fav.onchange = ()=>{ prefs.fav=fav.checked; savePrefs(); };
 maxSel.onchange = ()=>{ prefs.max=maxSel.value; savePrefs(); };
 entire.onchange = ()=>{ prefs.entire=entire.checked; savePrefs(); };
 refreshLinks();
