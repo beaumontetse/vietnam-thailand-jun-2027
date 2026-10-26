@@ -172,6 +172,39 @@ svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .tips svg{color:var(--c);margin-top:2px}
 @media (max-width:760px){.tips{grid-template-columns:1fr}}
 
+
+/* Saved drawer */
+button.sl-count{cursor:pointer}
+button.sl-count:hover{border-color:var(--accent)}
+.sl-count svg{width:15px;height:15px;color:var(--vn)}
+.scrim{position:fixed;inset:0;background:rgba(6,16,14,.45);z-index:45;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);z-index:46;background:var(--bg);border-left:1px solid var(--line);box-shadow:-8px 0 32px rgba(0,0,0,.18);transform:translateX(102%);transition:transform .25s ease;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.drawer.open{transform:none}
+.dr-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line);background:var(--surface)}
+.dr-head h2{font-size:20px}
+.dr-body{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:18px}
+.dr-help{font-size:13.5px;color:var(--muted);margin:0}
+.dr-group h3{font:600 13px var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between}
+.dr-group h3 a{text-transform:none;letter-spacing:0;font-weight:600}
+.dr-item{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.dr-item + .dr-item{margin-top:8px}
+.dr-item .b{flex:1;min-width:0}
+.dr-item a.t{font-weight:600;font-size:14px;color:var(--ink);text-decoration:none;display:block;overflow-wrap:anywhere}
+.dr-item a.t:hover{color:var(--accent)}
+.dr-item .m{font-size:12.5px;color:var(--muted)}
+.dr-item button{border:0;background:none;color:var(--muted);cursor:pointer;padding:4px;border-radius:6px;font-size:18px;line-height:1}
+.dr-item button:hover{color:var(--vn);background:var(--sunk)}
+.dr-foot{padding:14px 18px;border-top:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:8px}
+.dr-foot p{margin:0;font-size:12.5px;color:var(--muted)}
+.import{display:none;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;margin-top:14px;border-radius:12px;background:var(--accent-soft);font-size:14px}
+.import.show{display:flex}
+.btn.save svg{width:17px;height:17px}
+.btn.save.on{background:var(--vn-soft);border-color:var(--vn-soft);color:var(--vn)}
+.btn.save.on svg{fill:currentColor}
+.no-vote .vote{display:none}
+@media (prefers-reduced-motion:reduce){.drawer,.scrim{transition:none}}
+
 /* Legs */
 section.leg{padding-block:64px 8px;scroll-margin-top:64px}
 .leg-head{display:grid;grid-template-columns:1fr auto;gap:8px 20px;align-items:end;padding-bottom:16px;border-bottom:2px solid var(--ink)}
@@ -288,7 +321,7 @@ footer .wrap{padding-block:24px 36px;display:flex;flex-wrap:wrap;gap:8px 24px;ju
   <div class="wrap">
     <a class="brand" href="#overview"><i class="dot"></i><span>VN · TH 2027</span></a>
     <nav class="stops" id="stops" aria-label="Stops"></nav>
-    <span class="sl-count" title="Listings on your shortlists">Shortlist <b id="slTotal">0</b></span>
+    <button class="sl-count" id="slBtn" type="button" aria-haspopup="dialog" aria-controls="drawer"><svg class="i" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Saved <b id="slTotal">0</b></button>
   </div>
 </header>
 
@@ -306,10 +339,11 @@ footer .wrap{padding-block:24px 36px;display:flex;flex-wrap:wrap;gap:8px 24px;ju
   </section>
 
   <div class="wrap">
+    <div class="import" id="importBar"><span id="importMsg"></span><button class="btn small" type="button" id="importYes">Add to my saved</button><button class="btn ghost small" type="button" id="importNo">Dismiss</button></div>
     <div class="howto">
       <div><b>1</b><span><h3>Pick a stop</h3><p>Use the bar at the top to jump between cities.</p></span></div>
       <div><b>2</b><span><h3>Start with our picks</h3><p>Three stays per city, each with why it's worth a look.</p></span></div>
-      <div><b>3</b><span><h3>Shortlist and vote</h3><p>Tap + on a stay, then vote in the Shortlist tab.</p></span></div>
+      <div><b>3</b><span><h3>Save your favorites</h3><p>Tap ♡ on any stay. Open Saved at the top right to see and share your list.</p></span></div>
     </div>
     <div class="stats" id="stats"></div>
   </div>
@@ -335,11 +369,17 @@ footer .wrap{padding-block:24px 36px;display:flex;flex-wrap:wrap;gap:8px 24px;ju
 </main>
 
 <footer><div class="wrap">
-  <span id="saveNote">Your shortlist is saved in this browser only.</span>
+  <span id="saveNote">Saved stays live on this device. Use Saved → Copy link to share them.</span>
   <span>Listings and prices from Airbnb, Oct 23, 2026. Totals for 2 guests before taxes. Place photos from Wikimedia Commons.</span>
   <a href="https://www.airbnb.com/wishlists/2229564432" target="_blank" rel="noopener">Airbnb wishlist ↗</a>
 </div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-h" hidden>
+  <div class="dr-head"><h2 id="dr-h">Saved stays</h2><button class="btn ghost small" type="button" id="drClose">Close</button></div>
+  <div class="dr-body" id="drBody"></div>
+  <div class="dr-foot" id="drFoot"><button class="btn" type="button" id="shareBtn">Copy link to share this list</button><p id="drNote">Saved on this device. Send the link to a friend so they can see your list.</p></div>
+</aside>
 
 <script>
 const LEGS = [
@@ -485,6 +525,7 @@ const IC = {
   car:'<svg class="i" viewBox="0 0 24 24"><path d="M5 17h14M6 17v2M18 17v2M4 13l2-5h12l2 5v4H4z"/><circle cx="8" cy="14" r="1"/><circle cx="16" cy="14" r="1"/></svg>',
   warn:'<svg class="i" viewBox="0 0 24 24"><path d="M12 3 2 20h20z"/><path d="M12 9v5M12 17.5v.5"/></svg>',
   plus:'<svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  heart:'<svg class="i" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
   check:'<svg class="i" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>',
   ext:'<svg class="i" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>'
 };
@@ -576,7 +617,7 @@ function stayCard(leg, r, opts){
   const foot = el("div","foot");
   const pr = el("div","price"); pr.appendChild(el("b",null,money(x.total))); pr.appendChild(el("span",null,"~"+money(x.total/n)+"/night · "+n+(n>1?" nights":" night"))); foot.appendChild(pr);
   const acts = el("div","acts");
-  const add = el("button","btn ghost icon"); add.type="button"; add.dataset.lid=x.id; add.dataset.seg=leg.id;
+  const add = el("button","btn ghost icon save"); add.type="button"; add.dataset.lid=x.id; add.dataset.seg=leg.id;
   add.onclick = ()=>quickAdd(leg, x, url, n, add);
   acts.appendChild(add);
   const v = el("a","btn"); v.href=url; v.target="_blank"; v.rel="noopener"; v.textContent="View"; v.appendChild(svgEl(IC.ext)); acts.appendChild(v);
@@ -586,8 +627,8 @@ function stayCard(leg, r, opts){
 function syncAddButtons(){
   document.querySelectorAll("button[data-lid]").forEach(b=>{
     const on = picks.some(p=>p.seg===b.dataset.seg && p.lid===b.dataset.lid);
-    b.classList.toggle("on",on); b.innerHTML = on?IC.check:IC.plus;
-    b.setAttribute("aria-label", on?"On shortlist":"Add to shortlist"); b.title = on?"On shortlist":"Add to shortlist";
+    b.classList.toggle("on",on); b.innerHTML = IC.heart;
+    b.setAttribute("aria-pressed", on); b.setAttribute("aria-label", on?"Saved. Tap to remove":"Save this stay"); b.title = on?"Saved":"Save";
   });
 }
 
@@ -630,7 +671,7 @@ LEGS.forEach((leg,i)=>{
 
   // Tabs
   const tabs = el("div","tabs"); tabs.style.marginTop="0"; tabs.setAttribute("role","tablist"); tabs.setAttribute("aria-label",leg.city+" views");
-  const defs = [["picks","Our picks",leg.pickRows.length],["hoods","Neighborhoods",leg.hoods.length],["all","All stays",leg.all.length],["short","Shortlist",0]];
+  const defs = [["picks","Our picks",leg.pickRows.length],["hoods","Neighborhoods",leg.hoods.length],["all","All stays",leg.all.length],["short","Saved",0]];
   const panels = {};
   defs.forEach(([k,label,count])=>{
     const b = el("button"); b.type="button"; b.setAttribute("role","tab"); b.id=leg.id+"-tab-"+k; b.setAttribute("aria-controls",leg.id+"-p-"+k);
@@ -650,7 +691,7 @@ LEGS.forEach((leg,i)=>{
   s.appendChild(tabs);
 
   // Picks panel
-  const pi = el("div","panel-intro"); pi.appendChild(el("p",null,"Three stays chosen for this stop. Tap + to add one to the shortlist."));
+  const pi = el("div","panel-intro"); pi.appendChild(el("p",null,"Three stays chosen for this stop. Tap ♡ to save one."));
   const allBtn = el("button","btn ghost small","See all "+leg.all.length+" stays"); allBtn.type="button"; allBtn.onclick=()=>select("all",true); pi.appendChild(allBtn);
   panels.picks.appendChild(pi);
   const g3 = el("div","grid3"); leg.pickRows.forEach(r=>g3.appendChild(stayCard(leg,r))); panels.picks.appendChild(g3);
@@ -686,7 +727,7 @@ LEGS.forEach((leg,i)=>{
   });
 
   // Shortlist panel
-  const si = el("div","panel-intro"); si.appendChild(el("p",null,"Vote on what you like. Mark one booked once it's confirmed."));
+  const si = el("div","panel-intro"); si.appendChild(el("p",null,"Everything you saved for this stop. Mark one booked once it's confirmed."));
   const addBtn = el("button","btn ghost small"); addBtn.type="button"; addBtn.appendChild(svgEl(IC.plus)); addBtn.appendChild(document.createTextNode("Paste a listing")); si.appendChild(addBtn);
   panels.short.appendChild(si);
   const form = el("form","add"); form.id="form-"+leg.id;
@@ -736,7 +777,7 @@ async function render(){
     const list = listEls[leg.id]; list.replaceChildren();
     const mine = picks.filter(p=>p.seg===leg.id).sort((a,b)=>(b.booked-a.booked)||(voteCount(b)-voteCount(a))||(a.at-b.at));
     tabCounts[leg.id].textContent = mine.length;
-    if (!mine.length){ list.appendChild(el("div","empty","Nothing here yet. Tap + on any stay, or paste an Airbnb link.")); return; }
+    if (!mine.length){ list.appendChild(el("div","empty","Nothing saved yet. Tap ♡ on any stay, or paste an Airbnb link.")); return; }
     mine.forEach(p=>{
       const row = el("div","pick"+(p.booked?" booked":""));
       const v = el("button","vote"+((p.votes && p.votes[me||"me"])?" on":"")); v.type="button"; v.setAttribute("aria-label","Vote for this listing");
@@ -758,7 +799,76 @@ async function render(){
     });
   });
   syncAddButtons();
+  renderDrawer();
 }
+function renderDrawer(){
+  const body = document.getElementById("drBody"); body.replaceChildren();
+  if (!picks.length){
+    body.appendChild(el("p","dr-help","Nothing saved yet. Tap the ♡ on any stay and it shows up here, grouped by city."));
+    document.getElementById("shareBtn").disabled = true; return;
+  }
+  document.getElementById("shareBtn").disabled = false;
+  body.appendChild(el("p","dr-help","Tap a name to open it on Airbnb."));
+  LEGS.forEach(leg=>{
+    const mine = picks.filter(p=>p.seg===leg.id); if(!mine.length) return;
+    const g = el("div","dr-group"); const h = el("h3",null,leg.city+" · "+mine.length);
+    const jump = el("a",null,"Go to "+leg.code); jump.href="#"+leg.id; jump.onclick=()=>{ closeDrawer(); leg.select("short",true); }; h.appendChild(jump); g.appendChild(h);
+    mine.forEach(p=>{
+      const it = el("div","dr-item"); const b = el("div","b");
+      const t = el("a","t",p.title||"Airbnb listing"); t.href=safeUrl(p.url); t.target="_blank"; t.rel="noopener"; b.appendChild(t);
+      const bits=[]; if(p.price) bits.push("~$"+p.price+"/night"); if(p.notes) bits.push(p.notes); if(p.booked) bits.push("Booked");
+      if (bits.length) b.appendChild(el("div","m",bits.join(" · ")));
+      it.appendChild(b);
+      const x = el("button",null,"×"); x.type="button"; x.setAttribute("aria-label","Remove "+(p.title||"listing")); x.onclick=()=>{ removePick(p); toast("Removed from saved"); }; it.appendChild(x);
+      g.appendChild(it);
+    });
+    body.appendChild(g);
+  });
+}
+const drawer=document.getElementById("drawer"), scrim=document.getElementById("scrim"); let lastFocus=null;
+function openDrawer(){ lastFocus=document.activeElement; drawer.hidden=false; requestAnimationFrame(()=>{drawer.classList.add("open"); scrim.classList.add("open");}); document.getElementById("drClose").focus(); }
+function closeDrawer(){ drawer.classList.remove("open"); scrim.classList.remove("open"); setTimeout(()=>{ drawer.hidden=true; },250); if(lastFocus) lastFocus.focus(); }
+document.getElementById("slBtn").onclick=openDrawer;
+document.getElementById("drClose").onclick=closeDrawer;
+scrim.onclick=closeDrawer;
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !drawer.hidden) closeDrawer(); });
+document.getElementById("shareBtn").onclick=async()=>{
+  const data = picks.map(p=>p.lid?[p.seg,p.lid]:[p.seg,"u",p.url,p.title||"",p.price||0]);
+  const link = location.origin+location.pathname+"?saved="+encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(data)))));
+  try{ await navigator.clipboard.writeText(link); toast("Link copied. Send it to your travel buddy."); }
+  catch(e){ window.prompt ? toast("Copy failed. Long-press the address bar to copy.") : null; }
+};
+// Import a shared list from ?saved=
+(function(){
+  let raw=null; try{ raw=new URLSearchParams(location.search).get("saved"); }catch(e){}
+  if(!raw) return;
+  let data=[]; try{ data=JSON.parse(decodeURIComponent(escape(atob(raw)))); }catch(e){ return; }
+  const docs=[];
+  data.forEach(d=>{
+    const leg=LEGS.find(l=>l.id===d[0]); if(!leg) return;
+    if (d[1]==="u"){ if(safeUrl(d[2])!=="#") docs.push({seg:leg.id,url:d[2],title:String(d[3]).slice(0,120),price:+d[4]||0,notes:""}); return; }
+    const m=leg.all.find(a=>a.x.id===d[1]); if(!m) return;
+    const ci=m.h.ci||leg.ci, co=m.h.co||leg.co, n=nights(ci,co);
+    docs.push({seg:leg.id,lid:m.x.id,url:"https://www.airbnb.com/rooms/"+m.x.id+"?check_in="+ci+"&check_out="+co+"&adults=2",title:m.x.name,price:Math.round(m.x.total/n),notes:m.x.beds+" · ★ "+m.x.rating});
+  });
+  if(!docs.length) return;
+  const bar=document.getElementById("importBar");
+  document.getElementById("importMsg").textContent="Someone shared "+docs.length+" saved stay"+(docs.length>1?"s":"")+" with you.";
+  bar.classList.add("show");
+  const clear=()=>{ bar.classList.remove("show"); try{ history.replaceState(null,"",location.pathname); }catch(e){} };
+  document.getElementById("importNo").onclick=clear;
+  document.getElementById("importYes").onclick=async()=>{
+    let added=0;
+    for(const d of docs){
+      if (picks.some(p=>p.seg===d.seg && (d.lid?p.lid===d.lid:p.url===d.url))) continue;
+      const doc=Object.assign({booked:false,at:Date.now()+added,votes:{},by:me||null},d);
+      if (shared){ try{ await db.collection("picks").add(doc); added++; }catch(e){} }
+      else { doc._local=true; doc._id="l"+Date.now()+added; picks.push(doc); added++; }
+    }
+    if(!shared){ saveLocal(); render(); }
+    clear(); toast(added?"Added "+added+" to your saved stays":"You already had all of these"); if(added) openDrawer();
+  };
+})();
 async function addPick(seg, form){
   const url=form.querySelector(`#url-${seg}`).value.trim(), title=form.querySelector(`#title-${seg}`).value.trim();
   const price=parseInt(form.querySelector(`#price-${seg}`).value,10)||0, notes=form.querySelector(`#notes-${seg}`).value.trim();
@@ -766,16 +876,16 @@ async function addPick(seg, form){
   if (safeUrl(url)==="#"){ status.textContent="Paste the full https:// link."; return; }
   const doc={seg,url,title:title.slice(0,120),price,notes:notes.slice(0,500),booked:false,at:Date.now(),votes:{},by:me||null};
   doc.votes[me||"me"]=true;
-  if (shared){ status.textContent="Saving…"; try{ await db.collection("picks").add(doc); status.textContent=""; form.reset(); form.classList.remove("open"); toast("Added to shortlist"); }catch(e){ status.textContent = e&&e.code==="permission_denied"?"You can view this list but not add to it.":"Couldn't save. Try again."; } }
-  else { doc._local=true; doc._id="l"+Date.now(); picks.push(doc); saveLocal(); form.reset(); form.classList.remove("open"); render(); toast("Added to shortlist"); }
+  if (shared){ status.textContent="Saving…"; try{ await db.collection("picks").add(doc); status.textContent=""; form.reset(); form.classList.remove("open"); toast("Saved"); }catch(e){ status.textContent = e&&e.code==="permission_denied"?"You can view this list but not add to it.":"Couldn't save. Try again."; } }
+  else { doc._local=true; doc._id="l"+Date.now(); picks.push(doc); saveLocal(); form.reset(); form.classList.remove("open"); render(); toast("Saved"); }
 }
 async function quickAdd(leg, x, url, n, btn){
   const existing = picks.find(p=>p.seg===leg.id && p.lid===x.id);
-  if (existing){ await removePick(existing); toast("Removed from "+leg.city+" shortlist"); return; }
+  if (existing){ await removePick(existing); toast("Removed from saved"); return; }
   const doc={seg:leg.id,lid:x.id,url,title:x.name.slice(0,120),price:Math.round(x.total/n),notes:x.beds+" · ★ "+x.rating,booked:false,at:Date.now(),votes:{},by:me||null};
   doc.votes[me||"me"]=true;
-  if (shared){ try{ await db.collection("picks").add(doc); toast("Added to "+leg.city+" shortlist"); }catch(e){ toast(e&&e.code==="permission_denied"?"View only: you can't add here":"Couldn't save. Try again."); } }
-  else { doc._local=true; doc._id="l"+Date.now(); picks.push(doc); saveLocal(); render(); toast("Added to "+leg.city+" shortlist"); }
+  if (shared){ try{ await db.collection("picks").add(doc); toast("Saved · tap Saved at the top to see your list"); }catch(e){ toast(e&&e.code==="permission_denied"?"View only: you can't add here":"Couldn't save. Try again."); } }
+  else { doc._local=true; doc._id="l"+Date.now(); picks.push(doc); saveLocal(); render(); toast("Saved · tap Saved at the top to see your list"); }
 }
 async function patch(p, data){
   if (shared && p._id && !p._local){ try{ await db.collection("picks").doc(p._id).update(data);}catch(e){ toast("Couldn't save. Try again."); } }
@@ -788,6 +898,7 @@ async function removePick(p){
   else { picks=picks.filter(x=>x!==p); saveLocal(); render(); }
 }
 
+document.body.classList.add("no-vote");
 picks = localPicks(); render();
 (async ()=>{
   if (!window.claude || !window.claude.use) return;
@@ -796,7 +907,7 @@ picks = localPicks(); render();
     userNs = u; if (u){ try { me = await u.id(); } catch(e){} }
     if (!d) return;
     db = d; shared = true;
-    document.getElementById("saveNote").textContent = "Shortlists are shared with everyone who can open this page.";
+    document.getElementById("saveNote").textContent = "Saved stays are shared with everyone who can open this page."; document.body.classList.remove("no-vote"); document.getElementById("drNote").textContent="Shared live with everyone who can open this page.";
     db.collection("picks").onSnapshot(snap=>{ picks = snap.docs.map(s=>Object.assign({_id:s.id}, s.data())); render(); }, ()=>{});
   } catch(e){}
 })();
