@@ -329,7 +329,7 @@ footer .wrap{padding-block:24px 36px;display:flex;flex-wrap:wrap;gap:8px 24px;ju
   <section class="landing" id="overview">
     <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Dramatic_karst_landscape_of_Phang_Nga_Bay%2C_Thailand.jpg/1920px-Dramatic_karst_landscape_of_Phang_Nga_Bay%2C_Thailand.jpg" alt="" onerror="this.remove()" fetchpriority="high">
     <div class="wrap">
-      <div class="eyebrow">May 29 – Jun 13, 2027 · 2 travelers · 14 nights</div>
+      <div class="eyebrow">Beau &amp; Brandon · May 29 – Jun 13, 2027 · 14 nights</div>
       <h1>Vietnam &amp; Thailand</h1>
       <p class="lede">Street food in Hanoi, rooftops in Saigon, temples in Bangkok and island days in Phuket. Everything we need to pick where to stay is on this page.</p>
       <div class="cta"><a class="btn light" href="#han">Start with Hanoi →</a><a class="btn glass" href="#flights">See flights</a><a class="btn glass" href="#prep">Before you go</a></div>
@@ -370,7 +370,7 @@ footer .wrap{padding-block:24px 36px;display:flex;flex-wrap:wrap;gap:8px 24px;ju
 
 <footer><div class="wrap">
   <span id="saveNote">Saved stays live on this device. Use Saved → Copy link to share them.</span>
-  <span>Listings and prices from Airbnb, Oct 23, 2026. Totals for 2 guests before taxes. Place photos from Wikimedia Commons.</span>
+  <span>Listings and prices from Airbnb, Oct 23, 2026. Totals for Beau &amp; Brandon (2 guests) before taxes. Place photos from Wikimedia Commons.</span>
   <a href="https://www.airbnb.com/wishlists/2229564432" target="_blank" rel="noopener">Airbnb wishlist ↗</a>
 </div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -582,7 +582,7 @@ LEGS.forEach((leg,i)=>{
 });
 const lo = LEGS.reduce((s,l)=>s+l.lo,0), hi = LEGS.reduce((s,l)=>s+l.hi,0);
 const stats = document.getElementById("stats");
-[[ "14","nights"],["4","stops · 2 countries"],["5","flights"],[money(lo)+"–"+money(hi),"lodging for 2, using our picks"],[money(lo/2)+"–"+money(hi/2),"per person"]].forEach(([b,s])=>{
+[[ "14","nights"],["4","stops · 2 countries"],["5","flights"],[money(lo)+"–"+money(hi),"lodging for Beau & Brandon"],[money(lo/2)+"–"+money(hi/2),"each"]].forEach(([b,s])=>{
   const d=el("div","stat"); d.appendChild(el("b",null,b)); d.appendChild(el("span",null,s)); stats.appendChild(d);
 });
 
