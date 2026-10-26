@@ -105,8 +105,75 @@ svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-widt
 }
 .flag{display:inline-block;font:600 11px var(--mono);padding:2px 6px;border-radius:4px;background:var(--warn-soft);color:var(--warn);margin-left:6px;white-space:nowrap}
 
+
+/* Photo hero */
+.landing{position:relative;isolation:isolate;color:#fff;background:linear-gradient(135deg,#0B3B33,#12305E);overflow:hidden}
+.landing > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.landing::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(6,16,14,.35) 0%,rgba(6,16,14,.25) 40%,rgba(6,16,14,.82) 100%)}
+.landing .wrap{padding-block:clamp(56px,11vh,120px) 28px}
+.landing .eyebrow{color:rgba(255,255,255,.85)}
+.landing h1{font-size:clamp(40px,7.4vw,84px);font-weight:800;letter-spacing:-.03em;margin-top:10px;max-width:14ch;text-shadow:0 2px 24px rgba(0,0,0,.25)}
+.landing .lede{color:rgba(255,255,255,.9);max-width:56ch;margin:14px 0 0;font-size:17px}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.btn.light{background:#fff;color:#0B3B33;border-color:#fff}
+.btn.glass{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.45);backdrop-filter:blur(6px)}
+.credit{position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:8px;font-size:11px;color:rgba(255,255,255,.7);text-decoration:none}
+.landing .route{margin-top:clamp(36px,7vh,72px)}
+.landing .stopcard{color:var(--ink)}
+.landing .route::before{border-color:rgba(255,255,255,.4)}
+.stopcard .thumb{margin:-14px -14px 4px;aspect-ratio:16/8;position:relative;background:linear-gradient(135deg,var(--cs),var(--sunk));overflow:hidden;border-radius:var(--r) var(--r) 0 0}
+.stopcard .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.stopcard .thumb .pin{position:absolute;left:12px;bottom:-1px;transform:translateY(50%)}
+.stopcard .row{margin-top:8px}
+.howto{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding-block:22px 6px}
+.howto div{display:flex;gap:12px;align-items:flex-start;padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.howto b{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font:700 14px var(--display)}
+.howto h3{font-size:15px;font-family:var(--body);font-weight:600}
+.howto p{margin:2px 0 0;font-size:13.5px;color:var(--muted)}
+@media (max-width:760px){.howto{grid-template-columns:1fr}}
+.sec-title{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:44px 0 14px}
+.sec-title h2{font-size:24px}
+.know{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.know article{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.know .tag{align-self:flex-start;font:600 11px var(--mono);padding:2px 7px;border-radius:5px;background:var(--cs);color:var(--c)}
+.know h3{font-size:16px}
+.know p{margin:0;font-size:13.5px;color:var(--muted)}
+.know a{font-size:13px;font-weight:600}
+@media (max-width:900px){.know{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.know{grid-template-columns:1fr}}
+
+/* City banner */
+.banner{position:relative;isolation:isolate;border-radius:18px;overflow:hidden;min-height:clamp(200px,30vw,320px);display:flex;align-items:flex-end;color:#fff;background:linear-gradient(135deg,var(--c),#0B3B33)}
+.banner > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.banner::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.72))}
+.banner .in{width:100%;padding:22px;display:grid;grid-template-columns:1fr auto;gap:8px 20px;align-items:end}
+.banner .eyebrow{color:rgba(255,255,255,.85);display:flex;gap:8px;align-items:center}
+.banner .eyebrow i{width:8px;height:8px;border-radius:50%;background:#fff}
+.banner h2{font-size:clamp(34px,6vw,56px);font-weight:800;letter-spacing:-.02em;margin-top:6px}
+.banner h2 small{font:500 .38em var(--body);opacity:.85;margin-left:10px;letter-spacing:0}
+.banner .dates{text-align:right;font-variant-numeric:tabular-nums}
+.banner .dates b{display:block;font:700 20px var(--display)}
+.banner .dates span{font-size:13px;opacity:.85}
+.banner .credit{bottom:auto;top:10px}
+@media (max-width:560px){.banner .in{grid-template-columns:1fr}.banner .dates{text-align:left}}
+.sub-h{display:flex;justify-content:space-between;align-items:baseline;margin:26px 0 12px}
+.sub-h h3{font-size:19px}
+.sub-h span{font-size:13px;color:var(--muted)}
+.todo{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,1fr);gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:thin}
+.todo article{scroll-snap-align:start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.todo .tp{aspect-ratio:16/10;background:linear-gradient(135deg,var(--cs),var(--sunk));position:relative}
+.todo .tp img{width:100%;height:100%;object-fit:cover;display:block}
+.todo .tp span{position:absolute;left:10px;top:10px;font:600 11px var(--body);background:rgba(0,0,0,.6);color:#fff;padding:3px 8px;border-radius:999px}
+.todo .tb{padding:12px 14px}
+.todo h4{font:600 15px var(--body)}
+.todo p{margin:4px 0 0;font-size:13px;color:var(--muted)}
+.tips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.tips div{display:flex;gap:10px;padding:12px 14px;background:var(--sunk);border-radius:12px;font-size:13.5px;min-width:0}
+.tips svg{color:var(--c);margin-top:2px}
+@media (max-width:760px){.tips{grid-template-columns:1fr}}
+
 /* Legs */
-section.leg{padding-block:56px 8px;scroll-margin-top:64px}
+section.leg{padding-block:64px 8px;scroll-margin-top:64px}
 .leg-head{display:grid;grid-template-columns:1fr auto;gap:8px 20px;align-items:end;padding-bottom:16px;border-bottom:2px solid var(--ink)}
 .leg-head .eyebrow{display:flex;align-items:center;gap:8px}
 .leg-head .eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--c)}
@@ -226,18 +293,41 @@ footer .wrap{padding-block:24px 36px;display:flex;flex-wrap:wrap;gap:8px 24px;ju
 </header>
 
 <main>
-  <section class="hero wrap" id="overview">
-    <div class="eyebrow">May 29 – Jun 13, 2027 · 2 guests</div>
-    <h1>Vietnam &amp; Thailand Stays</h1>
-    <p class="lede">Four stops, fourteen nights. Each stop has three picks from your Airbnb wishlist, a neighborhood guide, and a shared shortlist to vote on.</p>
-    <div class="route" id="route"></div>
-    <div class="stats" id="stats"></div>
+  <section class="landing" id="overview">
+    <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Dramatic_karst_landscape_of_Phang_Nga_Bay%2C_Thailand.jpg/1920px-Dramatic_karst_landscape_of_Phang_Nga_Bay%2C_Thailand.jpg" alt="" onerror="this.remove()" fetchpriority="high">
+    <div class="wrap">
+      <div class="eyebrow">May 29 – Jun 13, 2027 · 2 travelers · 14 nights</div>
+      <h1>Vietnam &amp; Thailand</h1>
+      <p class="lede">Street food in Hanoi, rooftops in Saigon, temples in Bangkok and island days in Phuket. Everything we need to pick where to stay is on this page.</p>
+      <div class="cta"><a class="btn light" href="#han">Start with Hanoi →</a><a class="btn glass" href="#flights">See flights</a><a class="btn glass" href="#prep">Before you go</a></div>
+      <div class="route" id="route"></div>
+    </div>
+    <a class="credit" href="https://commons.wikimedia.org/wiki/File:Dramatic_karst_landscape_of_Phang_Nga_Bay,_Thailand.jpg" target="_blank" rel="noopener">Phang Nga Bay · Wikimedia Commons</a>
   </section>
 
-  <section class="wrap" aria-labelledby="fl-h">
+  <div class="wrap">
+    <div class="howto">
+      <div><b>1</b><span><h3>Pick a stop</h3><p>Use the bar at the top to jump between cities.</p></span></div>
+      <div><b>2</b><span><h3>Start with our picks</h3><p>Three stays per city, each with why it's worth a look.</p></span></div>
+      <div><b>3</b><span><h3>Shortlist and vote</h3><p>Tap + on a stay, then vote in the Shortlist tab.</p></span></div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <section class="wrap" id="flights" aria-labelledby="fl-h" style="scroll-margin-top:72px">
+    <div class="sec-title"><h2 id="fl-h">Flights</h2><span class="eyebrow">All times local</span></div>
     <div class="board">
-      <div class="board-head"><h2 id="fl-h">Flights</h2><span class="eyebrow">All times local</span></div>
       <div class="flights"><table><thead><tr><th>Date</th><th>Route</th><th>Times</th><th>Airline</th></tr></thead><tbody id="flightRows"></tbody></table></div>
+    </div>
+  </section>
+
+  <section class="wrap" id="prep" style="scroll-margin-top:72px">
+    <div class="sec-title"><h2>Before you go</h2><span class="eyebrow">Check official sites before booking</span></div>
+    <div class="know">
+      <article class="vn"><span class="tag">VIETNAM</span><h3>Get the e-visa</h3><p>US passports need one. Apply only on the official government site about a month ahead; it takes 3–5 working days.</p><a href="https://thithucdientu.gov.vn" target="_blank" rel="noopener">thithucdientu.gov.vn ↗</a></article>
+      <article class="th"><span class="tag">THAILAND</span><h3>Arrival card, no visa</h3><p>US passports enter visa-free for short stays. Fill in the free Digital Arrival Card within 72 hours before landing on Jun 6.</p><a href="https://tdac.immigration.go.th" target="_blank" rel="noopener">tdac.immigration.go.th ↗</a></article>
+      <article class="vn"><span class="tag">WEATHER</span><h3>Hot, with afternoon storms</h3><p>June is early wet season everywhere we go. Pack light clothes, a rain shell, and plan beach and boat days flexibly in Phuket.</p></article>
+      <article class="th"><span class="tag">ON THE GROUND</span><h3>Grab, eSIM, some cash</h3><p>Grab works in all four cities. A regional eSIM covers both countries. Carry some dong and baht for street food.</p></article>
     </div>
   </section>
 
@@ -246,7 +336,7 @@ footer .wrap{padding-block:24px 36px;display:flex;flex-wrap:wrap;gap:8px 24px;ju
 
 <footer><div class="wrap">
   <span id="saveNote">Your shortlist is saved in this browser only.</span>
-  <span>Listings and prices from Airbnb, Oct 23, 2026. Totals for 2 guests before taxes.</span>
+  <span>Listings and prices from Airbnb, Oct 23, 2026. Totals for 2 guests before taxes. Place photos from Wikimedia Commons.</span>
   <a href="https://www.airbnb.com/wishlists/2229564432" target="_blank" rel="noopener">Airbnb wishlist ↗</a>
 </div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -342,6 +432,45 @@ function autoChips(x){
   if (x.reviews>=150 && out.length<3) out.unshift(x.reviews+" reviews");
   return out.slice(0,3);
 }
+const PHOTO = s => "https://thumb.wikimedia.org/wikipedia/commons/thumb/"+s;
+const CITY = {
+  han:{img:PHOTO("8/8e/Hanoi_skyline_with_Ba_Vi_Mountain.jpg/1600px-Hanoi_skyline_with_Ba_Vi_Mountain.jpg"), file:"Hanoi_skyline_with_Ba_Vi_Mountain.jpg",
+    todo:[
+      {t:"Hoàn Kiếm Lake",tag:"Walkable",p:"Go at dawn for tai chi by the lake and the red Huc Bridge before the heat.",img:PHOTO("7/79/Thap_Rua.jpg/640px-Thap_Rua.jpg")},
+      {t:"Old Quarter food crawl",tag:"Evening",p:"Bún chả, phở and egg coffee, all within a few blocks of your stay.",img:PHOTO("d/da/Old_Quarter_Street_Scene_-_Hanoi_-_Vietnam_%2848256301206%29.jpg/640px-Old_Quarter_Street_Scene_-_Hanoi_-_Vietnam_%2848256301206%29.jpg")},
+      {t:"Train Street",tag:"Check access",p:"Cafés inches from the tracks. Police sometimes close it, so ask your host first.",img:PHOTO("e/e8/Hanoi_Train_Street_%2820231225b%29_%2853489076293%29.jpg/640px-Hanoi_Train_Street_%2820231225b%29_%2853489076293%29.jpg")},
+      {t:"Temple of Literature",tag:"1–2 hours",p:"Vietnam's first university, founded in 1070. Quiet courtyards in the middle of the city.",img:PHOTO("3/39/Hanoi_Temple_of_Literature_%28cropped%29.jpg/640px-Hanoi_Temple_of_Literature_%28cropped%29.jpg")},
+      {t:"Hạ Long Bay",tag:"Day trip",p:"Limestone islands about 2.5 hours away. A full day, so plan it for Jun 1 or 2.",img:PHOTO("7/79/Ha_Long_Bay_in_2019.jpg/640px-Ha_Long_Bay_in_2019.jpg")}
+    ],
+    tips:["Cross streets at a slow, steady pace. Motorbikes flow around you.","Most street food is cash only. Small dong notes help.","Late arrival: have Grab set up before you land."]},
+  sgn:{img:PHOTO("8/86/Ho_Chi_Minh_City%2C_City_Hall%2C_2020-01_CN-03.jpg/1600px-Ho_Chi_Minh_City%2C_City_Hall%2C_2020-01_CN-03.jpg"), file:"Ho_Chi_Minh_City,_City_Hall,_2020-01_CN-03.jpg",
+    todo:[
+      {t:"Bến Thành Market",tag:"Walkable",p:"The classic market, with a night food market around it after dark.",img:PHOTO("f/f5/Ben_Thanh%2C_Ciudad_Ho_Chi_Minh%2C_Vietnam%2C_2013-08-14%2C_DD_01.JPG/640px-Ben_Thanh%2C_Ciudad_Ho_Chi_Minh%2C_Vietnam%2C_2013-08-14%2C_DD_01.JPG")},
+      {t:"Central Post Office",tag:"30 min",p:"French-era hall designed in Eiffel's era, next to the cathedral.",img:PHOTO("0/03/Saigon_Central_Post_Office_%2852681461470%29.jpg/640px-Saigon_Central_Post_Office_%2852681461470%29.jpg")},
+      {t:"Bùi Viện Street",tag:"Night",p:"Backpacker street that turns into a loud, neon party after 8 pm.",img:PHOTO("5/52/Bui_Vien_Walking_Street_1.jpg/640px-Bui_Vien_Walking_Street_1.jpg")},
+      {t:"Củ Chi Tunnels",tag:"Half day",p:"Wartime tunnel network about 1.5 hours out. Go in the morning before it gets hot.",img:PHOTO("1/14/C%E1%BB%A7_Chi_tunnels_entrance.JPG/640px-C%E1%BB%A7_Chi_tunnels_entrance.JPG")},
+      {t:"Mekong Delta",tag:"Day trip",p:"Boats, fruit orchards and floating markets. Best as a full-day tour on Jun 4 or 5.",img:PHOTO("5/57/C%E1%BA%A7u_Cao_L%C3%A3nh.jpg/640px-C%E1%BA%A7u_Cao_L%C3%A3nh.jpg")}
+    ],
+    tips:["Saigon is spread out. Grab bikes are the fastest way around.","Expect short, heavy downpours most afternoons in June.","Your Jun 6 flight is 11:15 am. Leave District 1 by 8:30."]},
+  bkk:{img:PHOTO("7/7d/4Y1A1159_Bangkok_%2833536795515%29.jpg/1600px-4Y1A1159_Bangkok_%2833536795515%29.jpg"), file:"4Y1A1159_Bangkok_(33536795515).jpg",
+    todo:[
+      {t:"Chatuchak Market",tag:"Sun Jun 6",p:"Weekend-only market with 15,000 stalls. You land Sunday midday, so go that afternoon.",img:PHOTO("3/33/Bangkok_-_Jatujak_Market_02.JPG/640px-Bangkok_-_Jatujak_Market_02.JPG")},
+      {t:"Grand Palace",tag:"Dress code",p:"Covered shoulders and knees required. Go at opening to beat the crowds and heat.",img:PHOTO("c/c7/0005574_-_Wat_Phra_Kaew_006.jpg/640px-0005574_-_Wat_Phra_Kaew_006.jpg")},
+      {t:"Wat Pho",tag:"Next door",p:"The 46-metre reclining Buddha, and the birthplace of Thai massage.",img:PHOTO("5/53/%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B8%9E%E0%B8%B8%E0%B8%97%E0%B8%98%E0%B9%84%E0%B8%AA%E0%B8%A2%E0%B8%B2%E0%B8%AA%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%8A%E0%B8%95%E0%B8%B8%E0%B8%9E%E0%B8%99.jpg/640px-%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B8%9E%E0%B8%B8%E0%B8%97%E0%B8%98%E0%B9%84%E0%B8%AA%E0%B8%A2%E0%B8%B2%E0%B8%AA%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%8A%E0%B8%95%E0%B8%B8%E0%B8%9E%E0%B8%99.jpg")},
+      {t:"Wat Arun",tag:"Sunset",p:"Take the cross-river ferry from Wat Pho. Best just before sunset.",img:PHOTO("2/2a/%E0%B9%80%E0%B8%88%E0%B8%94%E0%B8%B5%E0%B8%A2%E0%B9%8C%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%98%E0%B8%B2%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B8%87%E0%B8%9B%E0%B8%A3%E0%B8%B2%E0%B8%87%E0%B8%84%E0%B9%8C%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%AD%E0%B8%A3%E0%B8%B8%E0%B8%932.jpg/640px-%E0%B9%80%E0%B8%88%E0%B8%94%E0%B8%B5%E0%B8%A2%E0%B9%8C%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%98%E0%B8%B2%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B8%87%E0%B8%9B%E0%B8%A3%E0%B8%B2%E0%B8%87%E0%B8%84%E0%B9%8C%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%AD%E0%B8%A3%E0%B8%B8%E0%B8%932.jpg")},
+      {t:"Chao Phraya boats",tag:"Cheap",p:"The river express boat links the old city sights and beats road traffic.",img:PHOTO("a/a5/Chao_Phraya_River_-_Bangkok_-_northwards_-_from_King_Taksin_Bridge_-_2021.jpg/640px-Chao_Phraya_River_-_Bangkok_-_northwards_-_from_King_Taksin_Bridge_-_2021.jpg")}
+    ],
+    tips:["From Suvarnabhumi, the Airport Rail Link runs to Phaya Thai, one BTS stop from Ari.","Use BTS and MRT for anything near a line. Traffic is brutal.","Leave for Don Mueang by 9:30 am on Jun 10."]},
+  hkt:{img:PHOTO("6/60/Phuket_Aerial.jpg/1600px-Phuket_Aerial.jpg"), file:"Phuket_Aerial.jpg",
+    todo:[
+      {t:"Phang Nga Bay",tag:"Boat trip",p:"Limestone cliffs and sea caves by longtail or kayak. Trips can be cancelled in rough monsoon seas.",img:PHOTO("3/3e/Dramatic_karst_landscape_of_Phang_Nga_Bay%2C_Thailand.jpg/640px-Dramatic_karst_landscape_of_Phang_Nga_Bay%2C_Thailand.jpg")},
+      {t:"Kata Beach",tag:"Near our pick",p:"A calmer beach than Patong. Swim only when the lifeguard flag is not red.",img:PHOTO("3/33/Kata_beach_morning_2.jpg/640px-Kata_beach_morning_2.jpg")},
+      {t:"Phuket Old Town",tag:"Food",p:"Colorful Sino-Portuguese shophouses and the island's best local food.",img:PHOTO("2/25/Phuket_City.jpg/640px-Phuket_City.jpg")},
+      {t:"Wat Chalong",tag:"1 hour",p:"Phuket's most important temple, on the way between Kata and Old Town.",img:"https://upload.wikimedia.org/wikipedia/commons/8/84/Wat_chalong_pagoda.jpg"},
+      {t:"Phi Phi Islands",tag:"Day trip",p:"About 2 hours by speedboat. Weather-dependent in June, so keep a backup plan.",img:PHOTO("e/e7/KohPhiPhi.JPG/640px-KohPhiPhi.JPG")}
+    ],
+    tips:["Taxis are expensive. Grab and Bolt are usually cheaper.","Red flag on the beach means no swimming. Monsoon rip currents are strong.","Airport run: leave around midnight on Jun 12 for the 3:20 am flight."]}
+};
 const LOCAL = {han:"Hà Nội", sgn:"TP. Hồ Chí Minh", bkk:"กรุงเทพฯ", hkt:"ภูเก็ต"};
 const FLIGHTS = [
   {d:"Sat May 29", from:"SFO", to:"HAN", via:"via LAX, NRT", t:"7:15 am → 10:35 pm", plus:"+1 day", air:"United · ANA"},
@@ -402,7 +531,8 @@ const navLinks = {};
 const route = document.getElementById("route");
 LEGS.forEach((leg,i)=>{
   const a = el("a","stopcard "+leg.cc); a.href="#"+leg.id;
-  const r = el("div","row"); r.appendChild(el("i","pin")); r.appendChild(el("span","num","0"+(i+1)+" · "+leg.code)); a.appendChild(r);
+  const th = el("div","thumb"); const ti = new Image(); ti.alt=""; ti.loading="lazy"; ti.src=CITY[leg.id].img.replace("1600px","640px"); ti.onerror=()=>ti.remove(); th.appendChild(ti); th.appendChild(el("i","pin")); a.appendChild(th);
+  const r = el("div","row"); r.appendChild(el("span","num","Stop "+(i+1))); r.appendChild(el("span","num",leg.code)); a.appendChild(r);
   a.appendChild(el("h3",null,leg.city));
   a.appendChild(el("div","when",fmtD(leg.ci)+" – "+fmtD(leg.co)+" · "+nights(leg.ci,leg.co)+" nights"));
   const rg = el("div","range"); rg.appendChild(el("span",null,"Picks from ")); rg.appendChild(el("b",null,money(leg.lo)+"–"+money(leg.hi)));
@@ -467,12 +597,17 @@ const linkEls = [], listEls = {}, tabCounts = {};
 const tabState = store.get("tabs",{});
 LEGS.forEach((leg,i)=>{
   const s = el("section","leg "+leg.cc); s.id=leg.id; s.setAttribute("aria-labelledby",leg.id+"-h");
-  const head = el("div","leg-head");
+  const C = CITY[leg.id];
+  const head = el("div","banner");
+  const bi = new Image(); bi.alt=""; bi.loading="lazy"; bi.src=C.img; bi.onerror=()=>bi.remove(); head.appendChild(bi);
+  const inn = el("div","in");
   const l = el("div");
   const eb = el("div","eyebrow"); eb.appendChild(el("i")); eb.appendChild(document.createTextNode("Stop "+(i+1)+" of 4 · "+leg.country)); l.appendChild(eb);
   const h2 = el("h2",null,leg.city); h2.id=leg.id+"-h"; h2.appendChild(el("small",null,LOCAL[leg.id])); l.appendChild(h2);
-  head.appendChild(l);
-  const d = el("div","dates"); d.appendChild(el("b",null,fmtD(leg.ci)+" → "+fmtD(leg.co))); d.appendChild(el("span",null,nights(leg.ci,leg.co)+" nights · picks "+money(leg.lo)+"–"+money(leg.hi))); head.appendChild(d);
+  inn.appendChild(l);
+  const d = el("div","dates"); d.appendChild(el("b",null,fmtD(leg.ci)+" → "+fmtD(leg.co))); d.appendChild(el("span",null,nights(leg.ci,leg.co)+" nights · stays "+money(leg.lo)+"–"+money(leg.hi))); inn.appendChild(d);
+  head.appendChild(inn);
+  const cr = el("a","credit","Photo: Wikimedia Commons"); cr.href="https://commons.wikimedia.org/wiki/File:"+encodeURIComponent(C.file); cr.target="_blank"; cr.rel="noopener"; head.appendChild(cr);
   s.appendChild(head);
 
   const logi = el("div","logi");
@@ -482,8 +617,19 @@ LEGS.forEach((leg,i)=>{
   s.appendChild(logi);
   if (leg.note){ const n=el("div","callout"); n.appendChild(svgEl(IC.warn)); n.appendChild(el("div",null,leg.note)); s.appendChild(n); }
 
+  const sh2 = el("div","sub-h"); sh2.appendChild(el("h3",null,"Don't miss in "+leg.city)); sh2.appendChild(el("span",null,"Swipe for more →")); s.appendChild(sh2);
+  const todo = el("div","todo");
+  C.todo.forEach(t=>{
+    const a = el("article"); const tp = el("div","tp"); const im = new Image(); im.alt=""; im.loading="lazy"; im.src=t.img; im.onerror=()=>im.remove(); tp.appendChild(im); tp.appendChild(el("span",null,t.tag)); a.appendChild(tp);
+    const tb = el("div","tb"); tb.appendChild(el("h4",null,t.t)); tb.appendChild(el("p",null,t.p)); a.appendChild(tb); todo.appendChild(a);
+  });
+  s.appendChild(todo);
+  const tips = el("div","tips"); C.tips.forEach(t=>{ const d=el("div"); d.appendChild(svgEl(IC.check)); d.appendChild(el("span",null,t)); tips.appendChild(d); }); s.appendChild(tips);
+
+  const sh3 = el("div","sub-h"); sh3.appendChild(el("h3",null,"Where to stay")); s.appendChild(sh3);
+
   // Tabs
-  const tabs = el("div","tabs"); tabs.setAttribute("role","tablist"); tabs.setAttribute("aria-label",leg.city+" views");
+  const tabs = el("div","tabs"); tabs.style.marginTop="0"; tabs.setAttribute("role","tablist"); tabs.setAttribute("aria-label",leg.city+" views");
   const defs = [["picks","Our picks",leg.pickRows.length],["hoods","Neighborhoods",leg.hoods.length],["all","All stays",leg.all.length],["short","Shortlist",0]];
   const panels = {};
   defs.forEach(([k,label,count])=>{
